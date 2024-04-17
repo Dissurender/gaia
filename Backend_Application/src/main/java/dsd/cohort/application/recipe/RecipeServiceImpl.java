@@ -1,7 +1,6 @@
 package dsd.cohort.application.recipe;
 
 import java.text.DecimalFormat;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dsd.cohort.application.config.ApiDetailsImpl;
 import dsd.cohort.application.ingredient.IngredientEntity;
-import dsd.cohort.application.ingredient.IngredientRepository;
 import dsd.cohort.application.ingredient.IngredientServiceImpl;
 
 @Service
