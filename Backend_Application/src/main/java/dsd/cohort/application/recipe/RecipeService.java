@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface RecipeService {
 
-    // Will hold a list of recipes that meet the search criteria
+    // Will hold a list of recipes that meet the search partial
     List<RecipeEntity> getRecipeByName(String name);
 
     RecipeEntity getRecipeByRecipeId(String recipeId);

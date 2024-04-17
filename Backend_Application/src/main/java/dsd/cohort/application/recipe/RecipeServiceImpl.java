@@ -43,6 +43,7 @@ public class RecipeServiceImpl implements RecipeService {
     // Return a recipe if it exists in the database by id
     @Override
     public RecipeEntity getRecipeByRecipeId(String recipeId) throws ResponseStatusException {
+
         RecipeEntity recipe = recipeRepository.findByRecipeId(recipeId);
 
         if (recipe == null) {
@@ -59,7 +60,7 @@ public class RecipeServiceImpl implements RecipeService {
     // Return a recipe if it exists in the database by name
     @Override
     public List<RecipeEntity> getRecipeByName(String name) {
-        return null;
+        return recipeRepository.findByName(name);
     }
 
     @Override
@@ -161,6 +162,7 @@ public class RecipeServiceImpl implements RecipeService {
      * @return a Set of IngredientEntity objects parsed from the JSON node
      */
     public Set<IngredientEntity> parseIngredients(JsonNode ingredientsJson, String recipeId) {
+        
         Set<IngredientEntity> ingredients = new HashSet<>();
         DecimalFormat df = new DecimalFormat("#.00");
 

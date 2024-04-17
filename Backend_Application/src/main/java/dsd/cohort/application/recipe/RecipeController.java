@@ -28,7 +28,7 @@ public class RecipeController {
     }
 
     @GetMapping("/search/{name}")
-    public String getRecipeByName(@PathVariable String name) {
-        return recipeService.getRecipeByName(name).toString();
+    public List<RecipeEntity> getRecipeByName(@PathVariable String name) {
+        return recipeService.getRecipeByName(name);
     }
 }
