@@ -18,18 +18,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dsd.cohort.application.config.ApiDetailsImpl;
 import dsd.cohort.application.ingredient.IngredientEntity;
 import dsd.cohort.application.ingredient.IngredientRepository;
+import dsd.cohort.application.ingredient.IngredientServiceImpl;
 
 @Service
 public class RecipeServiceImpl implements RecipeService {
 
     private RecipeRepository recipeRepository;
-    private IngredientRepository ingredientRepository;
     private ApiDetailsImpl apiDetails;
+    private IngredientServiceImpl ingredientService;
 
-    public RecipeServiceImpl(RecipeRepository recipeRepository, IngredientRepository ingredientRepository,
+    public RecipeServiceImpl(RecipeRepository recipeRepository, IngredientServiceImpl ingredientService,
             ApiDetailsImpl apiDetails) {
         this.recipeRepository = recipeRepository;
-        this.ingredientRepository = ingredientRepository;
+        this.ingredientService = ingredientService;
         this.apiDetails = apiDetails;
     }
 
@@ -88,6 +89,8 @@ public class RecipeServiceImpl implements RecipeService {
      * @param recipeId the ID of the recipe to fetch
      * @return a RecipeEntity object representing the fetched recipe
      * @throws ResponseStatusException if unable to parse the recipe
+     * @throws JsonMappingException if unable to map the recipe to a RecipeEntity
+     * @throws JsonProcessingException if unable to process the recipe
      */
 
     public RecipeEntity fetchRecipe(String recipeId)
@@ -145,7 +148,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         // get ingredients from json
         JsonNode ingredientsJson = jsonNode.findValue("ingredients");
-        Set<IngredientEntity> ingredients = parseIngredients(ingredientsJson, recipeId);
+        Set<IngredientEntity> ingredients = ingredientService.parseIngredients(ingredientsJson, recipeId);
         newRecipe.setIngredients(ingredients);
 
         System.out.println("\n\nSuccessful parse\n\n");
@@ -154,50 +157,4 @@ public class RecipeServiceImpl implements RecipeService {
 
     }
 
-    /**
-     * Parses the given JSON node representing ingredients and creates a Set of
-     * IngredientEntity objects.
-     *
-     * @param ingredientsJson the JSON node representing ingredients
-     * @return a Set of IngredientEntity objects parsed from the JSON node
-     */
-    public Set<IngredientEntity> parseIngredients(JsonNode ingredientsJson, String recipeId) {
-        
-        Set<IngredientEntity> ingredients = new HashSet<>();
-        DecimalFormat df = new DecimalFormat("#.00");
-
-        if (ingredientsJson.isArray()) {
-            for (JsonNode ingredient : ingredientsJson) {
-
-                String foodId = ingredient.findValue("foodId").textValue();
-                IngredientEntity existingIngredient = ingredientRepository.findByFoodId(foodId);
-
-                if (existingIngredient != null) {
-                    ingredients.add(existingIngredient);
-                    continue;
-                }
-
-                IngredientEntity newIngredient = new IngredientEntity();
-
-                newIngredient.setFoodId(ingredient.findValue("foodId").textValue());
-                newIngredient.setText(ingredient.findValue("text").textValue());
-                newIngredient.setQuantity(ingredient.findValue("quantity").intValue());
-                newIngredient.setMeasure(ingredient.findValue("measure").textValue());
-                newIngredient.setName(ingredient.findValue("food").textValue());
-                newIngredient.setFoodCategory(ingredient.findValue("foodCategory").textValue());
-                newIngredient.setImageUrl(ingredient.findValue("image").textValue());
-
-                Double weight = ingredient.findValue("weight").doubleValue();
-                newIngredient.setWeight(Double.parseDouble(df.format(weight)));
-
-                ingredients.add(newIngredient);
-
-                ingredientRepository.save(newIngredient);
-
-            }
-        }
-
-        return ingredients;
-
-    }
 }

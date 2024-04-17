@@ -1,6 +1,10 @@
 package dsd.cohort.application.ingredient;
 
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Service
 public interface IngredientService {
@@ -10,5 +14,7 @@ public interface IngredientService {
     IngredientEntity ingredientExists(String foodId);
 
     IngredientEntity createIngredient(IngredientEntity ingredient);
+
+    Set<IngredientEntity> parseIngredients(JsonNode ingredientsJson, String recipeId);
 
 }
