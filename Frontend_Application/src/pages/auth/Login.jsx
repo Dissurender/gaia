@@ -1,5 +1,11 @@
+import { Typography } from "@mui/material";
+
 const Login = () => {
-  return <></>;
+  return (
+  <>
+    <Typography variant="h1">Login</Typography>
+  </>
+  );
 };
 
 export default Login;

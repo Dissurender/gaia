@@ -1,5 +1,11 @@
+import { Typography } from "@mui/material";
+
 const Register = () => {
-  return <></>;
-}
+  return (
+    <>
+      <Typography variant="h1">Register</Typography>
+    </>
+  );
+};
 
 export default Register;

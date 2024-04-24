@@ -7,12 +7,12 @@ const Footer = () => {
       <Grid
         container
         padding={2}
-        direction={'row'}
+        direction={'column'}
         alignItems={'center'}
         className='footer'
       >
         <Typography>
-          &copy; {new Date().getFullYear()}
+          &copy; {new Date().getFullYear()} GAIA
         </Typography>
       </Grid>
     </>
