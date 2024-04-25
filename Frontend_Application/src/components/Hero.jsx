@@ -1,4 +1,5 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
+import { Link as LinkRouter } from "react-router-dom";
 import pic from "../assets/tomatoes.png";
 
 const Hero = () => {
@@ -25,10 +26,11 @@ const Hero = () => {
           </Typography>
           <Grid container spacing={2} justifyContent="flex-end">
             <Grid item marginRight={4}>
-              {/*Re-add this button for About Page if have time*/}
-              {/* <Button variant="contained" color="primary" size="large">
-                Explore
-              </Button> */}
+              <Button variant="contained" color="primary" size="large">
+                <LinkRouter to="/login">
+                  Explore
+                </LinkRouter>
+              </Button>
             </Grid>
           </Grid>
         </Box>

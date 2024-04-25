@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ import dsd.cohort.application.ingredient.IngredientEntity;
 @Service
 public class RecipeServiceImpl implements RecipeService {
 
+    private static final Logger logger = LoggerFactory.getLogger(RecipeServiceImpl.class);
+
     private RecipeRepository recipeRepository;
     private ApiDetailsImpl apiDetails;
     private Utility utility;
@@ -37,8 +41,8 @@ public class RecipeServiceImpl implements RecipeService {
     // return all recipes from database
     @Override
     public List<RecipeEntity> getAllRecipes() {
-        System.out.println("Fetching all recipes...");
-        System.out.println("Number of recipes: " + recipeRepository.count());
+        logger.info("Fetching all recipes...");
+        logger.info("Number of recipes: " + recipeRepository.count());
         return recipeRepository.findAll();
     }
 
@@ -55,20 +59,22 @@ public class RecipeServiceImpl implements RecipeService {
         RecipeEntity recipe = recipeRepository.findByRecipeId(recipeId);
 
         if (recipe == null) {
-            System.out.println("\nRecipe not found, fetching from API...");
+            logger.info("\nRecipe not found, fetching from API...");
             RecipeEntity newRecipe;
             try {
                 newRecipe = createRecipe(recipeId);
             } catch (ResponseStatusException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to fetch recipe.");
             }
-            System.out.println("\nRecipe fetched from API: " + newRecipe.getRecipeId());
+            logger.info("\nRecipe fetched from API: " + newRecipe.getRecipeId());
+
             recipeRepository.save(newRecipe);
+            logger.info("\nRecipe saved to database: " + newRecipe.getRecipeId());
+
             return newRecipe;
         }
 
-        System.out.println("\nRecipe found in database: " + recipe.getRecipeId());
-
+        logger.info("\nRecipe found in database: " + recipe.getRecipeId());
         return recipe;
     }
 
@@ -85,7 +91,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         if (recipes.isEmpty()) {
             try {
-                System.out.println("\nSearch partial not found, fetching from API...");
+                logger.info("\nSearch partial not found, fetching from API...");
                 recipes = queryApi(name);
                 recipeRepository.saveAll(recipes);
             } catch (Exception e) {
@@ -125,10 +131,10 @@ public class RecipeServiceImpl implements RecipeService {
         try {
             recipe = fetchRecipe(recipeId);
         } catch (JsonMappingException e) {
-            System.out.println("Mapping error: " + e.getMessage());
+            logger.error("\nMapping error: ", e.getMessage());
             throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "Issue mapping API response.");
         } catch (JsonProcessingException e) {
-            System.out.println("Parsing error: " + e.getMessage());
+            logger.error("\nParsing error: " + e.getMessage());
             throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "Issue parsing API response.");
         }
 
@@ -162,6 +168,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         RecipeEntity newRecipe = utility.recipeHandler(jsonNode, recipeId);
 
+        logger.info("\nRecipe fetched from API: " + newRecipe.getRecipeId());
         return newRecipe;
 
     }
@@ -229,28 +236,18 @@ public class RecipeServiceImpl implements RecipeService {
 
         if (jsonNode.isArray()) {
 
-            int i = 0;
             for (JsonNode recipe : jsonNode) {
 
-                if (i == 5) {
-                    break;
-                }
                 String recipeId = recipe.findValue("uri").textValue().split("#")[1];
-                System.out.println("Recipe ID: " + "recipeId");
                 RecipeEntity existingRecipe = getRecipeByRecipeId(recipeId);
 
                 if (existingRecipe != null) {
                     recipes.add(existingRecipe);
-                    System.out.println("\nRecipe already exists: " + recipeId);
-                    i++;
                     continue;
                 }
 
                 RecipeEntity newRecipe = utility.recipeHandler(recipe, recipeId);
-
                 recipes.add(newRecipe);
-                i++;
-
             }
         }
 
