@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.ipc.http.HttpSender.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -34,25 +35,38 @@ public class RecipeController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "All recipes returned",
             content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = RecipeDTO.class)))),
-        @ApiResponse(responseCode = "500", description = "Could not get recipes",
+        @ApiResponse(responseCode = "404", description = "Could not find recipes",
             content = @Content()),
     })
     @GetMapping("/")
-    public List<RecipeEntity> getAllRecipes() {
-        return recipeService.getAllRecipes();
+    public ResponseEntity<List<RecipeEntity>> getAllRecipes() {
+        List<RecipeEntity> recipes = recipeService.getAllRecipes();
+
+        if (recipes == null) {
+            logger.error("\nCould not find recipes");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(recipes);
     }
 
     @Operation(summary = "Get a recipe by id", description = "Get recipe by id. Recipe id should be in the format of 'recipe_bmyxrshbfao9s1amjrvhoauob6mo'")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Recipe found",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDTO.class))),
-        @ApiResponse(responseCode = "500", description = "Recipe not found",
+        @ApiResponse(responseCode = "404", description = "Recipe not found",
             content = @Content),
     })
     @GetMapping("/{recipeId}")
-    public RecipeEntity getRecipeById(@PathVariable String recipeId) {
+    public ResponseEntity<RecipeEntity> getRecipeById(@PathVariable String recipeId) {
         RecipeEntity recipe = recipeService.getRecipeByRecipeId(recipeId);
-        return recipe;
+
+        if (recipe == null) {
+            logger.error("\nRecipe not found with id: " + recipeId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(recipe);
     }
 
     @Operation(summary = "Get all recipes by name partial", description = "Get all recipes by name partial(i.e. 'chicken' will return all recipes with 'chicken' in the name)")
