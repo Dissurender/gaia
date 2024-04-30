@@ -1,14 +1,10 @@
 package dsd.cohort.application.Utils;
 
-import java.security.Key;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.stereotype.Component;
 
@@ -19,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dsd.cohort.application.ingredient.IngredientEntity;
 import dsd.cohort.application.ingredient.IngredientRepository;
-import dsd.cohort.application.ingredient.IngredientServiceImpl;
+import dsd.cohort.application.ingredient.IngredientService;
 import dsd.cohort.application.recipe.RecipeEntity;
 
 @Component
@@ -27,17 +23,15 @@ public class Utility {
 
     private DecimalFormat df = new DecimalFormat("#.00");
 
-    private String secret = "icantbelieveitsnotsecret";
-
     private IngredientRepository ingredientRepository;
 
-    private IngredientServiceImpl ingredientServiceImpl;
+    private IngredientService ingredientService;
 
     private long lastCallTime;
 
-    public Utility(IngredientRepository ingredientRepository, IngredientServiceImpl ingredientServiceImpl) {
+    public Utility(IngredientRepository ingredientRepository, IngredientService ingredientService) {
         this.ingredientRepository = ingredientRepository;
-        this.ingredientServiceImpl = ingredientServiceImpl;
+        this.ingredientService = ingredientService;
         this.lastCallTime = System.currentTimeMillis() / 1000;
     }
 
@@ -62,41 +56,6 @@ public class Utility {
         }
 
         return tokens;
-    }
-
-    public String encryptString(String str) {
-
-        Key aesKey = new SecretKeySpec(secret.getBytes(), "AES");
-
-        try {
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE, aesKey);
-
-            byte[] encrypted = cipher.doFinal(str.getBytes());
-            str = new String(encrypted);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return str;
-    }
-
-    public String decryptString(String str) {
-
-        Key key = new SecretKeySpec(secret.getBytes(), "AES");
-
-        try {
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.DECRYPT_MODE, key);
-
-            String decrypted = new String(cipher.doFinal(str.getBytes()));
-
-            str = decrypted;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return str;
     }
 
     public RecipeEntity recipeHandler(JsonNode jsonNode, String recipeId) {
@@ -175,7 +134,7 @@ public class Utility {
         Double weight = ingredient.findValue("weight").doubleValue();
         newIngredient.setWeight(Double.parseDouble(df.format(weight)));
 
-        ingredientServiceImpl.createIngredient(newIngredient);
+        ingredientService.createIngredient(newIngredient);
 
         System.out.println("\n\nSuccessful ingredient parse\n\n");
 
