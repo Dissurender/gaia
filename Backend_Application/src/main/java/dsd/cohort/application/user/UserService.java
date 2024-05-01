@@ -35,12 +35,12 @@ public class UserService {
 
         usersRepository.findByEmail(user.getEmail()).orElseThrow();
 
-        UserEntity newUser = new UserEntity();
-
-        newUser.setFirstName(user.getFirstName());
-        newUser.setLastName(user.getLastName());
-        newUser.setEmail(user.getEmail());
-        newUser.setPassword(Encryption.encryptString(user.getPassword()));
+        UserEntity newUser = new UserEntity(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                Encryption.encryptString(user.getPassword())
+        );
 
         return usersRepository.save(newUser);
     }

@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import dsd.cohort.application.recipe.dto.EdamamResponse;
+import dsd.cohort.application.recipe.dto.RecipeDTO;
+import dsd.cohort.application.recipe.dto.SearchResponseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,8 @@ import dsd.cohort.application.ingredient.IngredientEntity;
 public class RecipeService {
 
     private static final Logger logger = LoggerFactory.getLogger(RecipeService.class);
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     private RecipeRepository recipeRepository;
     private ApiDetailsImpl apiDetails;
@@ -126,7 +131,8 @@ public class RecipeService {
         RecipeEntity recipe;
         // fetch recipe
         try {
-            recipe = fetchRecipe(recipeId);
+            RecipeDTO recipeDTO = fetchRecipe(recipeId);
+            recipe = new RecipeEntity(recipeDTO);
         } catch (JsonMappingException e) {
             logger.error("\nMapping error: ", e.getMessage());
             throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "Issue mapping API response.");
@@ -149,24 +155,18 @@ public class RecipeService {
      * @throws JsonMappingException    if there is an issue with mapping the JSON
      *                                 response to a RecipeEntity object
      */
-    public RecipeEntity fetchRecipe(String recipeId)
+    public RecipeDTO fetchRecipe(String recipeId)
             throws ResponseStatusException, JsonProcessingException, JsonMappingException {
 
         // build url
-        String baseUrl = "";
-        baseUrl += "https://api.edamam.com/api/recipes/v2";
-        baseUrl += "/" + recipeId;
-        baseUrl += apiDetails.getApiDetails();
+        String baseUrl =  "https://api.edamam.com/api/recipes/v2" +
+                            "/" + recipeId +
+                            apiDetails.getApiDetails();
 
-        RestTemplate restTemplate = new RestTemplate();
-        String response = restTemplate.getForObject(baseUrl, String.class);
+        EdamamResponse response = restTemplate.getForObject(baseUrl, EdamamResponse.class);
 
-        JsonNode jsonNode = utility.stringToJson(response);
-
-        RecipeEntity newRecipe = utility.recipeHandler(jsonNode, recipeId);
-
-        logger.info("\nRecipe fetched from API: " + newRecipe.getRecipeId());
-        return newRecipe;
+        logger.info("\nRecipe fetched from API: " + response.getRecipe().getRecipeId());
+        return response.getRecipe();
 
     }
 
@@ -177,22 +177,22 @@ public class RecipeService {
      * @param ingredientsJson the JSON node representing ingredients list to parse
      * @return a Set of IngredientEntity objects
      */
-    public Set<IngredientEntity> parseIngredients(JsonNode ingredientsJson) {
-        Set<IngredientEntity> ingredients = new HashSet<>();
-
-        if (ingredientsJson.isArray()) {
-            for (JsonNode ingredient : ingredientsJson) {
-
-                IngredientEntity newIngredient = utility.parseIngredient(ingredient);
-
-                ingredients.add(newIngredient);
-
-            }
-        }
-
-        return ingredients;
-
-    }
+//    public Set<IngredientEntity> parseIngredients(JsonNode ingredientsJson) {
+//        Set<IngredientEntity> ingredients = new HashSet<>();
+//
+//        if (ingredientsJson.isArray()) {
+//            for (JsonNode ingredient : ingredientsJson) {
+//
+//                IngredientEntity newIngredient = utility.parseIngredient(ingredient);
+//
+//                ingredients.add(newIngredient);
+//
+//            }
+//        }
+//
+//        return ingredients;
+//
+//    }
 
     /**
      * Queries the Edamam API for recipes based on a given name.
@@ -222,20 +222,17 @@ public class RecipeService {
         baseUrl += "&q=" + name;
 
         RestTemplate restTemplate = new RestTemplate();
-        String response = restTemplate.getForObject(baseUrl, String.class);
-
-        // parse response to json
-        JsonNode jsonNode = utility.stringToJson(response);
-
-        jsonNode = jsonNode.findValue("hits");
+        SearchResponseDTO response = restTemplate.getForObject(baseUrl, SearchResponseDTO.class);
+        if (response == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No recipes found.");
+        }
 
         List<RecipeEntity> recipes = new ArrayList<>();
+        if (!response.getRecipes().isEmpty()) {
 
-        if (jsonNode.isArray()) {
+            for (RecipeDTO recipe : response.getRecipes()) {
 
-            for (JsonNode recipe : jsonNode) {
-
-                String recipeId = recipe.findValue("uri").textValue().split("#")[1];
+                String recipeId = recipe.getRecipeId();
                 RecipeEntity existingRecipe = getRecipeByRecipeId(recipeId);
 
                 if (existingRecipe != null) {
@@ -243,7 +240,7 @@ public class RecipeService {
                     continue;
                 }
 
-                RecipeEntity newRecipe = utility.recipeHandler(recipe, recipeId);
+                RecipeEntity newRecipe = new RecipeEntity(recipe);
                 recipes.add(newRecipe);
             }
         }

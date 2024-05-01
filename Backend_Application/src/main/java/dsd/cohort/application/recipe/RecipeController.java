@@ -2,6 +2,7 @@ package dsd.cohort.application.recipe;
 
 import java.util.List;
 
+import dsd.cohort.application.recipe.dto.RecipeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

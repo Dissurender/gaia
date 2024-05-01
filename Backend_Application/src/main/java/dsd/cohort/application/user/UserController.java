@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import dsd.cohort.application.ingredient.IngredientDTO;
 import dsd.cohort.application.ingredient.IngredientEntity;
-import dsd.cohort.application.recipe.RecipeDTO;
+import dsd.cohort.application.recipe.dto.RecipeDTO;
 import dsd.cohort.application.recipe.RecipeEntity;
 
 import io.swagger.v3.oas.annotations.Operation;

@@ -4,10 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import dsd.cohort.application.ingredient.IngredientEntity;
 import dsd.cohort.application.recipe.RecipeEntity;
 
@@ -21,10 +17,6 @@ import java.util.Set;
  * AllArgs will be for creating a new users with all fields
  */
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "users")
 public class UserEntity {
 
@@ -58,4 +50,38 @@ public class UserEntity {
     private Set<IngredientEntity> groceryList = new HashSet<>();
 
     // TODO: add preferences
+
+    public UserEntity() {
+
+    }
+    public UserEntity(String firstName, String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Set<RecipeEntity> getFavoriteRecipes() {
+        return favoriteRecipes;
+    }
+
+    public Set<IngredientEntity> getGroceryList() {
+        return groceryList;
+    }
 }

@@ -2,9 +2,7 @@ package dsd.cohort.application.Utils;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -16,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dsd.cohort.application.ingredient.IngredientEntity;
 import dsd.cohort.application.ingredient.IngredientRepository;
 import dsd.cohort.application.ingredient.IngredientService;
-import dsd.cohort.application.recipe.RecipeEntity;
 
 @Component
 public class Utility {
@@ -56,90 +53,6 @@ public class Utility {
         }
 
         return tokens;
-    }
-
-    public RecipeEntity recipeHandler(JsonNode jsonNode, String recipeId) {
-
-        RecipeEntity newRecipe = new RecipeEntity();
-
-        JsonNode recipeNode = jsonNode.findValue("recipe");
-
-        newRecipe.setName(recipeNode.findValue("label").textValue());
-        newRecipe.setDescription(recipeNode.findValue("label").textValue());
-        newRecipe.setRecipeId(recipeId);
-        newRecipe.setImageUrl(recipeNode.findValue("image").textValue());
-        newRecipe.setUrl(recipeNode.findValue("url").textValue());
-        newRecipe.setYield(recipeNode.findValue("yield").intValue());
-        newRecipe.setTotalTime(recipeNode.findValue("totalTime").intValue());
-
-        // get nutrients from json
-        JsonNode nutrients = recipeNode.findValue("totalNutrients");
-
-        Double caloriesD = recipeNode.findValue("calories").doubleValue();
-        newRecipe.setCalories(Double.parseDouble(df.format(caloriesD)));
-
-        double fats = nutrients
-                .findValue("FAT")
-                .findValue("quantity")
-                .doubleValue();
-        newRecipe.setFat(Double.parseDouble(df.format(fats)));
-
-        double protein = nutrients
-                .findValue("PROCNT")
-                .findValue("quantity")
-                .doubleValue();
-        newRecipe.setProtein(Double.parseDouble(df.format(protein)));
-
-        double carbs = nutrients
-                .findValue("CHOCDF")
-                .findValue("quantity")
-                .doubleValue();
-        newRecipe.setCarbs(Double.parseDouble(df.format(carbs)));
-
-        // get ingredients from json
-        JsonNode ingredientsJson = recipeNode.findValue("ingredients");
-
-        Set<IngredientEntity> ingredients = new HashSet<>();
-
-        for (JsonNode ingredient : ingredientsJson) {
-            ingredients.add(parseIngredient(ingredient));
-        }
-
-        newRecipe.setIngredients(ingredients);
-
-        System.out.println("\n\nSuccessful recipe parse\n\n");
-
-        return newRecipe;
-    }
-
-    public IngredientEntity parseIngredient(JsonNode ingredient) {
-
-        String foodId = ingredient.findValue("foodId").textValue();
-        IngredientEntity existingIngredient = ingredientRepository.findByFoodId(foodId);
-
-        if (existingIngredient != null) {
-            return existingIngredient;
-        }
-
-        IngredientEntity newIngredient = new IngredientEntity();
-
-        newIngredient.setFoodId(ingredient.findValue("foodId").textValue());
-        newIngredient.setText(ingredient.findValue("text").textValue());
-        newIngredient.setQuantity(ingredient.findValue("quantity").intValue());
-        newIngredient.setMeasure(ingredient.findValue("measure").textValue());
-        newIngredient.setName(ingredient.findValue("food").textValue());
-        newIngredient.setFoodCategory(ingredient.findValue("foodCategory").textValue());
-        newIngredient.setImageUrl(ingredient.findValue("image").textValue());
-
-        Double weight = ingredient.findValue("weight").doubleValue();
-        newIngredient.setWeight(Double.parseDouble(df.format(weight)));
-
-        ingredientService.createIngredient(newIngredient);
-
-        System.out.println("\n\nSuccessful ingredient parse\n\n");
-
-        return newIngredient;
-
     }
 
     public JsonNode stringToJson(String response) throws JsonProcessingException, JsonMappingException {
