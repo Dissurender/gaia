@@ -18,14 +18,14 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public IngredientEntity getIngredientByFoodId(String foodId) {
+    public Ingredient getIngredientByFoodId(String foodId) {
 
         return ingredientRepository.findByFoodId(foodId);
     }
 
     @Override
-    public IngredientEntity ingredientExists(String foodId) throws ResponseStatusException {
-        IngredientEntity ingredient = ingredientRepository.findByFoodId(foodId);
+    public Ingredient ingredientExists(String foodId) throws ResponseStatusException {
+        Ingredient ingredient = ingredientRepository.findByFoodId(foodId);
 
         if (ingredient == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found.");
@@ -35,14 +35,14 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public IngredientEntity createIngredient(IngredientEntity ingredient) {
+    public Ingredient createIngredient(Ingredient ingredient) {
 
         ingredientRepository.save(ingredient);
         return ingredient;
     }
 
     @Override
-    public List<IngredientEntity> getAllIngredients() {
+    public List<Ingredient> getAllIngredients() {
         return ingredientRepository.findAll();
     }
 }

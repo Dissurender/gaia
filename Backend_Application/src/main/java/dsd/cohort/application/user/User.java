@@ -1,8 +1,8 @@
 package dsd.cohort.application.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import dsd.cohort.application.ingredient.IngredientEntity;
-import dsd.cohort.application.recipe.RecipeEntity;
+import dsd.cohort.application.ingredient.Ingredient;
+import dsd.cohort.application.recipe.Recipe;
 import dsd.cohort.application.token.Token;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -60,10 +60,10 @@ public class User implements UserDetails {
     private List<Token> tokens;
 
     @OneToMany
-    private Set<RecipeEntity> favoriteRecipes = new HashSet<>();
+    private Set<Recipe> favoriteRecipes = new HashSet<>();
 
     @OneToMany
-    private Set<IngredientEntity> groceryList = new HashSet<>();
+    private Set<Ingredient> groceryList = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

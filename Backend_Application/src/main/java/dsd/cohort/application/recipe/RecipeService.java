@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 public interface RecipeService {
 
     // Will hold a list of recipes that meet the search criteria
-    List<RecipeEntity> getRecipeByName(String name);
+    List<Recipe> getRecipeByName(String name);
 
-    RecipeEntity getRecipeByRecipeId(String recipeId);
+    Recipe getRecipeByRecipeId(String recipeId);
 
-    RecipeEntity createRecipe(String recipeId);
+    Recipe createRecipe(String recipeId);
 
-    List<RecipeEntity> getAllRecipes(); // TODO: add pagination
+    List<Recipe> getAllRecipes(); // TODO: add pagination
 
     List<String> getRecipeNames();
 

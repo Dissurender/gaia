@@ -4,11 +4,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import dsd.cohort.application.Utils.Utility;
-import dsd.cohort.application.recipe.RecipeEntity;
+import dsd.cohort.application.recipe.Recipe;
 import dsd.cohort.application.recipe.RecipeRepository;
 import dsd.cohort.application.user.User;
 import dsd.cohort.application.user.UserRepository;
-import dsd.cohort.application.ingredient.IngredientEntity;
+import dsd.cohort.application.ingredient.Ingredient;
 import dsd.cohort.application.ingredient.IngredientRepository;
 
 @Component
@@ -74,7 +74,7 @@ public class BootstrapData implements CommandLineRunner {
 
     if (recipeRepository.findAll().isEmpty()) {
 
-      RecipeEntity recipe = new RecipeEntity();
+      Recipe recipe = new Recipe();
 
       recipe.setName("Test Recipe");
       recipe.setDescription("Test Instructions");
@@ -90,7 +90,7 @@ public class BootstrapData implements CommandLineRunner {
       recipe.setTotalTime(20);
       recipeRepository.save(recipe);
 
-      recipe = new RecipeEntity();
+      recipe = new Recipe();
       recipe.setName("Test Recipe 2");
       recipe.setDescription("You've been borgered");
       recipe.setRecipeId("Test_Borger");
@@ -109,7 +109,7 @@ public class BootstrapData implements CommandLineRunner {
     }
     
     if (ingredientRepository.findAll().isEmpty()) {
-      IngredientEntity ingredient = new IngredientEntity();
+      Ingredient ingredient = new Ingredient();
 
       ingredient.setName("Chicken");
       ingredient.setText("Chicken");

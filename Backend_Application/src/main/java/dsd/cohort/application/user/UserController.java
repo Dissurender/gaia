@@ -1,9 +1,9 @@
 package dsd.cohort.application.user;
 
 import dsd.cohort.application.ingredient.IngredientDTO;
-import dsd.cohort.application.ingredient.IngredientEntity;
+import dsd.cohort.application.ingredient.Ingredient;
 import dsd.cohort.application.recipe.RecipeDTO;
-import dsd.cohort.application.recipe.RecipeEntity;
+import dsd.cohort.application.recipe.Recipe;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -106,9 +106,9 @@ public class UserController {
                     content = @Content(mediaType = "application/json")),
     })
     @GetMapping("/getuserfavorites/{email}")
-    public ResponseEntity<Set<RecipeEntity>> getUserFavorites(@PathVariable String email) {
+    public ResponseEntity<Set<Recipe>> getUserFavorites(@PathVariable String email) {
         try {
-            Set<RecipeEntity> userFavorites = userService.getUserFavorites(email);
+            Set<Recipe> userFavorites = userService.getUserFavorites(email);
             return ResponseEntity.status(HttpStatus.OK).body(userFavorites);
 
         } catch (Exception e) {
@@ -145,9 +145,9 @@ public class UserController {
                     content = @Content(mediaType = "application/json")),
     })
     @GetMapping("/getgrocerylist/{email}")
-    public ResponseEntity<Set<IngredientEntity>> getGroceryList(@PathVariable String email) {
+    public ResponseEntity<Set<Ingredient>> getGroceryList(@PathVariable String email) {
         try {
-            Set<IngredientEntity> userGroceryList = userService.getGroceryList(email);
+            Set<Ingredient> userGroceryList = userService.getGroceryList(email);
             return ResponseEntity.status(HttpStatus.OK).body(userGroceryList);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not get user's grocery list");

@@ -2,7 +2,7 @@ package dsd.cohort.application.ingredient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import dsd.cohort.application.recipe.RecipeEntity;
+import dsd.cohort.application.recipe.Recipe;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ingredients")
-public class IngredientEntity {
+public class Ingredient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,7 +52,7 @@ public class IngredientEntity {
   
     @ManyToOne
     @JoinColumn(name = "recipe_id")
-    private RecipeEntity recipe;
+    private Recipe recipe;
 
     @Override
     public String toString() {

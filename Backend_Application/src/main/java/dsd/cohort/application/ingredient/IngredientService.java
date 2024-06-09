@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IngredientService {
 
-    IngredientEntity getIngredientByFoodId(String foodId);
+    Ingredient getIngredientByFoodId(String foodId);
 
-    IngredientEntity ingredientExists(String foodId);
+    Ingredient ingredientExists(String foodId);
 
-    IngredientEntity createIngredient(IngredientEntity ingredient);
+    Ingredient createIngredient(Ingredient ingredient);
 
-    List<IngredientEntity> getAllIngredients();
+    List<Ingredient> getAllIngredients();
 }

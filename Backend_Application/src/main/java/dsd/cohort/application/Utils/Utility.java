@@ -17,10 +17,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dsd.cohort.application.ingredient.IngredientEntity;
+import dsd.cohort.application.ingredient.Ingredient;
 import dsd.cohort.application.ingredient.IngredientRepository;
 import dsd.cohort.application.ingredient.IngredientServiceImpl;
-import dsd.cohort.application.recipe.RecipeEntity;
+import dsd.cohort.application.recipe.Recipe;
 
 @Component
 public class Utility {
@@ -99,9 +99,9 @@ public class Utility {
         return str;
     }
 
-    public RecipeEntity recipeHandler(JsonNode jsonNode, String recipeId) {
+    public Recipe recipeHandler(JsonNode jsonNode, String recipeId) {
 
-        RecipeEntity newRecipe = new RecipeEntity();
+        Recipe newRecipe = new Recipe();
 
         JsonNode recipeNode = jsonNode.findValue("recipe");
 
@@ -140,7 +140,7 @@ public class Utility {
         // get ingredients from json
         JsonNode ingredientsJson = recipeNode.findValue("ingredients");
 
-        Set<IngredientEntity> ingredients = new HashSet<>();
+        Set<Ingredient> ingredients = new HashSet<>();
 
         for (JsonNode ingredient : ingredientsJson) {
             ingredients.add(parseIngredient(ingredient));
@@ -153,16 +153,16 @@ public class Utility {
         return newRecipe;
     }
 
-    public IngredientEntity parseIngredient(JsonNode ingredient) {
+    public Ingredient parseIngredient(JsonNode ingredient) {
 
         String foodId = ingredient.findValue("foodId").textValue();
-        IngredientEntity existingIngredient = ingredientRepository.findByFoodId(foodId);
+        Ingredient existingIngredient = ingredientRepository.findByFoodId(foodId);
 
         if (existingIngredient != null) {
             return existingIngredient;
         }
 
-        IngredientEntity newIngredient = new IngredientEntity();
+        Ingredient newIngredient = new Ingredient();
 
         newIngredient.setFoodId(ingredient.findValue("foodId").textValue());
         newIngredient.setText(ingredient.findValue("text").textValue());

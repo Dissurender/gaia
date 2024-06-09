@@ -8,7 +8,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +15,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import dsd.cohort.application.Utils.Utility;
-import dsd.cohort.application.ingredient.IngredientEntity;
+import dsd.cohort.application.ingredient.Ingredient;
 
 @Service
 public class RecipeServiceImpl implements RecipeService {
@@ -33,7 +32,7 @@ public class RecipeServiceImpl implements RecipeService {
     // TODO: add pagination
     // return all recipes from database
     @Override
-    public List<RecipeEntity> getAllRecipes() {
+    public List<Recipe> getAllRecipes() {
         System.out.println("Fetching all recipes...");
         System.out.println("Number of recipes: " + recipeRepository.count());
         return recipeRepository.findAll();
@@ -48,12 +47,12 @@ public class RecipeServiceImpl implements RecipeService {
      */
 
     @Override
-    public RecipeEntity getRecipeByRecipeId(String recipeId) throws ResponseStatusException {
-        RecipeEntity recipe = recipeRepository.findByRecipeId(recipeId);
+    public Recipe getRecipeByRecipeId(String recipeId) throws ResponseStatusException {
+        Recipe recipe = recipeRepository.findByRecipeId(recipeId);
 
         if (recipe == null) {
             System.out.println("\nRecipe not found, fetching from API...");
-            RecipeEntity newRecipe;
+            Recipe newRecipe;
             try {
                 newRecipe = createRecipe(recipeId);
             } catch (ResponseStatusException e) {
@@ -76,9 +75,9 @@ public class RecipeServiceImpl implements RecipeService {
      * @return a list of RecipeEntity objects
      */
     @Override
-    public List<RecipeEntity> getRecipeByName(String name) {
+    public List<Recipe> getRecipeByName(String name) {
 
-        List<RecipeEntity> recipes = recipeRepository.findByName(name);
+        List<Recipe> recipes = recipeRepository.findByName(name);
 
         if (recipes.isEmpty()) {
             try {
@@ -101,8 +100,8 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public List<String> getRecipeNames() {
         List<String> recipeNames = new ArrayList<String>();
-        List<RecipeEntity> recipes = getAllRecipes();
-        for (RecipeEntity recipe : recipes) {
+        List<Recipe> recipes = getAllRecipes();
+        for (Recipe recipe : recipes) {
             recipeNames.add(recipe.getName());
         }
         return recipeNames;
@@ -115,9 +114,9 @@ public class RecipeServiceImpl implements RecipeService {
      * @return a RecipeEntity object
      */
     @Override
-    public RecipeEntity createRecipe(String recipeId) {
+    public Recipe createRecipe(String recipeId) {
 
-        RecipeEntity recipe = null;
+        Recipe recipe = null;
         // fetch recipe
 //        try {
 //            recipe = fetchRecipe(recipeId);
@@ -170,13 +169,13 @@ public class RecipeServiceImpl implements RecipeService {
      * @param ingredientsJson the JSON node representing ingredients list to parse
      * @return a Set of IngredientEntity objects
      */
-    public Set<IngredientEntity> parseIngredients(JsonNode ingredientsJson) {
-        Set<IngredientEntity> ingredients = new HashSet<>();
+    public Set<Ingredient> parseIngredients(JsonNode ingredientsJson) {
+        Set<Ingredient> ingredients = new HashSet<>();
 
         if (ingredientsJson.isArray()) {
             for (JsonNode ingredient : ingredientsJson) {
 
-                IngredientEntity newIngredient = utility.parseIngredient(ingredient);
+                Ingredient newIngredient = utility.parseIngredient(ingredient);
 
                 ingredients.add(newIngredient);
 

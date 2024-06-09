@@ -32,7 +32,7 @@ public class IngredientController {
             content = @Content),
     })
     @GetMapping("/{id}")
-    public IngredientEntity getIngredientById(@PathVariable String id) {
+    public Ingredient getIngredientById(@PathVariable String id) {
         return ingredientService.getIngredientByFoodId(id);
     }
 
@@ -44,7 +44,7 @@ public class IngredientController {
             content = @Content),
     })
     @GetMapping("/")
-    public List<IngredientEntity> getAllIngredients() {
+    public List<Ingredient> getAllIngredients() {
         return ingredientService.getAllIngredients();
     }
 

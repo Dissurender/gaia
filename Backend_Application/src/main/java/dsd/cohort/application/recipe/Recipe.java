@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import dsd.cohort.application.ingredient.IngredientEntity;
+import dsd.cohort.application.ingredient.Ingredient;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "recipes")
-public class RecipeEntity {
+public class Recipe {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,7 +60,7 @@ public class RecipeEntity {
     private double calories;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
-    private Set<IngredientEntity> ingredients = new HashSet<>();
+    private Set<Ingredient> ingredients = new HashSet<>();
 
     @Override
     public String toString() {
