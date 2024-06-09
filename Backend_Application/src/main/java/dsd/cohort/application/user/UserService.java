@@ -15,7 +15,7 @@ public interface UserService {
 
     boolean userExists(String email);
 
-    UserEntity createUser(UserRegisterDTO user) throws HttpServerErrorException.InternalServerError;
+    User createUser(UserRegisterDTO user) throws HttpServerErrorException.InternalServerError;
 
     boolean addRecipe(UserDataRequestDTO userDataRequestDTO);
 
@@ -29,7 +29,7 @@ public interface UserService {
 
     boolean removeFromGroceryList(UserDataRequestDTO userDataRequestDTO);
 
-    List<UserEntity> getAll();
+    List<User> getAll();
 
-    UserEntity userauth(UserRequestDTO userRequestDTO);
+    User userauth(UserRequestDTO userRequestDTO);
 }

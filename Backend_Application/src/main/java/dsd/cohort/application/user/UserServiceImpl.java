@@ -34,11 +34,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity createUser(UserRegisterDTO user) {
+    public User createUser(UserRegisterDTO user) {
 
         usersRepository.findByEmail(user.getEmail()).orElseThrow();
 
-        UserEntity newUser = new UserEntity();
+        User newUser = new User();
 
         newUser.setFirstName(user.getFirstName());
         newUser.setLastName(user.getLastName());
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean addRecipe(UserDataRequestDTO userDataRequestDTO) {
 
-        UserEntity user = usersRepository.findByEmail(userDataRequestDTO.getEmail()).orElseThrow();
+        User user = usersRepository.findByEmail(userDataRequestDTO.getEmail()).orElseThrow();
         RecipeEntity recipe = recipeRepository.findByRecipeId(userDataRequestDTO.getId());
 
         if (userExists(userDataRequestDTO.getEmail()) && recipe != null) {
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean deleteRecipe(String email, String recipeId) {
 
-        UserEntity user = usersRepository.findByEmail(email).orElseThrow();
+        User user = usersRepository.findByEmail(email).orElseThrow();
         RecipeEntity recipe = recipeRepository.findByRecipeId(recipeId);
 
         if (userExists(email) && recipe != null) {
@@ -86,14 +86,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserEntity> getAll() {
+    public List<User> getAll() {
         return usersRepository.findAll();
     }
 
     @Override
     public Set<RecipeEntity> getUserFavorites(String email) {
 
-        UserEntity user = usersRepository.findByEmail(email).orElseThrow();
+        User user = usersRepository.findByEmail(email).orElseThrow();
         if (userExists(email)) {
             return user.getFavoriteRecipes();
         }
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean addGroceryItem(UserDataRequestDTO userDataRequestDTO) {
 
-        UserEntity user = usersRepository.findByEmail(userDataRequestDTO.getEmail()).orElseThrow();
+        User user = usersRepository.findByEmail(userDataRequestDTO.getEmail()).orElseThrow();
         IngredientEntity ingredient = ingredientRepository.findByFoodId(userDataRequestDTO.getId());
         user.getGroceryList().add(ingredient);
         usersRepository.save(user);
@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public void addGroceryItems(UserEntity user, RecipeEntity recipe) {
+    public void addGroceryItems(User user, RecipeEntity recipe) {
 
         for (IngredientEntity ingredient : recipe.getIngredients()) {
             user.getGroceryList().add(ingredient);
@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean removeFromGroceryList(UserDataRequestDTO userDataRequestDTO) {
-        UserEntity user = usersRepository.findByEmail(userDataRequestDTO.getEmail()).orElseThrow();
+        User user = usersRepository.findByEmail(userDataRequestDTO.getEmail()).orElseThrow();
         IngredientEntity ingredient = ingredientRepository.findByFoodId(userDataRequestDTO.getId());
 
         if (userExists(userDataRequestDTO.getEmail()) && ingredient != null) {
@@ -157,13 +157,13 @@ public class UserServiceImpl implements UserService {
      * @throws NoSuchElementException if the user is not found
      */
     @Override
-    public UserEntity userauth(UserRequestDTO userRequestDTO) throws NoSuchElementException {
+    public User userauth(UserRequestDTO userRequestDTO) throws NoSuchElementException {
 
         if (!userExists(userRequestDTO.getEmail())) {
             throw new NoSuchElementException("User not found");
         }
 
-        UserEntity user = usersRepository.findByEmail(userRequestDTO.getEmail()).orElseThrow();
+        User user = usersRepository.findByEmail(userRequestDTO.getEmail()).orElseThrow();
         if (user.getPassword().equals(utility.encryptString(userRequestDTO.getPassword()))) {
             return user;
         }

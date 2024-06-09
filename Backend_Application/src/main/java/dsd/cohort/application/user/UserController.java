@@ -33,22 +33,22 @@ public class UserController {
     }
 
     @GetMapping("/test")
-    public List<UserEntity> test() {
+    public List<User> test() {
         return userService.getAll();
     }
 
     @Operation(summary = "Create a new user", description = "Create a new user with the provided form data")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User created",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserEntity.class))),
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
         @ApiResponse(responseCode = "500", description = "Could not create user",
             content = @Content(mediaType = "application/json")),
     })
     @PostMapping("/createuser")
-    public ResponseEntity<UserEntity> createUser(@RequestBody UserRegisterDTO user) {
+    public ResponseEntity<User> createUser(@RequestBody UserRegisterDTO user) {
 
         try {
-            UserEntity newUser = userService.createUser(user);
+            User newUser = userService.createUser(user);
 
             if (newUser == null) {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -184,14 +184,14 @@ public class UserController {
     @Operation(summary = "User authentication", description = "This endpoint authenticates a user, returns the user if authenticated or null if not")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User authenticated",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserEntity.class))),
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))),
         @ApiResponse(responseCode = "500", description = "User not authenticated",
             content = @Content(mediaType = "application/json")),
     })
     @PostMapping("/auth")
-    public ResponseEntity<UserEntity> userauth(@RequestBody UserRequestDTO userRequestDTO) {
+    public ResponseEntity<User> userauth(@RequestBody UserRequestDTO userRequestDTO) {
 
-        UserEntity auth;
+        User auth;
         try {
             auth = userService.userauth(userRequestDTO);
             if (auth != null) {

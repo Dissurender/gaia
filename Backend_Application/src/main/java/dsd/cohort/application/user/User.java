@@ -26,10 +26,9 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class UserEntity implements UserDetails {
+public class User implements UserDetails {
 
     @Id
-    // Spring will generate a unique id automagically
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false) // reference the column in the database
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -55,7 +54,7 @@ public class UserEntity implements UserDetails {
     private Role role;
 
     @OneToMany(mappedBy = "user")
-    private List<Token> tokens = new ArrayList<>();
+    private List<Token> tokens;
 
     @OneToMany
     private Set<RecipeEntity> favoriteRecipes = new HashSet<>();
@@ -66,6 +65,11 @@ public class UserEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override
