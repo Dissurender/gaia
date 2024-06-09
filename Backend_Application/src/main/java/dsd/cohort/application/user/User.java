@@ -1,17 +1,20 @@
 package dsd.cohort.application.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dsd.cohort.application.ingredient.IngredientEntity;
+import dsd.cohort.application.recipe.RecipeEntity;
 import dsd.cohort.application.token.Token;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import dsd.cohort.application.ingredient.IngredientEntity;
-import dsd.cohort.application.recipe.RecipeEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The annotations below help with handling boilerplate code for the users entity
