@@ -1,6 +1,5 @@
 package dsd.cohort.application.user;
 
-import dsd.cohort.application.Utils.Utility;
 import dsd.cohort.application.ingredient.Ingredient;
 import dsd.cohort.application.ingredient.IngredientRepository;
 import dsd.cohort.application.recipe.Recipe;
@@ -24,8 +23,8 @@ public class UserService {
     private final RecipeRepository recipeRepository;
     private final IngredientRepository ingredientRepository;
     private final PasswordEncoder passwordEncoder;
-    private final Utility utility;
 
+    // TODO: decay func
     public boolean userExists(String email) {
         return usersRepository.findByEmail(email).isPresent();
     }
@@ -34,7 +33,7 @@ public class UserService {
 
         usersRepository.findByEmail(user.getEmail()).orElseThrow();
 
-        User newUser = User.builder()
+        User newUser = new User.Builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
@@ -45,7 +44,7 @@ public class UserService {
     }
 
 
-    public boolean addRecipe(UserDataRequestDTO userDataRequestDTO) {
+    public void addRecipe(UserDataRequestDTO userDataRequestDTO) {
 
         User user = usersRepository.findByEmail(userDataRequestDTO.getEmail()).orElseThrow();
         Recipe recipe = recipeRepository.findByRecipeId(userDataRequestDTO.getId());
@@ -55,14 +54,12 @@ public class UserService {
             usersRepository.save(user);
             //Temporary add all recipe ingredients to Grocery List
             this.addGroceryItems(user, recipe);
-            return true;
         }
 
-        return false;
     }
 
 
-    public boolean deleteRecipe(String email, String recipeId) {
+    public void deleteRecipe(String email, String recipeId) {
 
         User user = usersRepository.findByEmail(email).orElseThrow();
         Recipe recipe = recipeRepository.findByRecipeId(recipeId);
@@ -70,15 +67,13 @@ public class UserService {
         if (userExists(email) && recipe != null) {
 
             if (!user.getFavoriteRecipes().contains(recipe)) {
-                return false;
+                return;
             }
 
             user.getFavoriteRecipes().remove(recipe);
             usersRepository.save(user);
-            return true;
         }
 
-        return false;
     }
 
 
@@ -160,7 +155,7 @@ public class UserService {
         }
 
         User user = usersRepository.findByEmail(userRequestDTO.getEmail()).orElseThrow();
-        if (user.getPassword().equals(utility.encryptString(userRequestDTO.getPassword()))) {
+        if (user.getPassword().equals(passwordEncoder.encode(userRequestDTO.getPassword()))) {
             return user;
         }
         return null;

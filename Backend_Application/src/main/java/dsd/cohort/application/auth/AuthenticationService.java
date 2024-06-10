@@ -41,12 +41,11 @@ public class AuthenticationService {
             return null;
         }
 
-        User user = User.builder()
+        User user = new User.Builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
                 .build();
 
         User savedUser = userRepository.save(user);

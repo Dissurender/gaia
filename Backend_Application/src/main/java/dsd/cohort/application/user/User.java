@@ -10,11 +10,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The annotations below help with handling boilerplate code for the users entity
@@ -25,7 +24,6 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
@@ -93,5 +91,53 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public static class Builder {
+
+        private String firstName;
+        private String lastName;
+        private String email;
+        private String password;
+        private final Role role = Role.USER;
+        private List<Token> tokens = new ArrayList<>();
+        private final Set<Recipe> favoriteRecipes = new HashSet<>();
+        private final Set<Ingredient> groceryList = new HashSet<>();
+
+        public Builder firstName(String name) {
+            firstName = name;
+            return this;
+        }
+
+        public Builder lastName(String name) {
+            lastName = name;
+            return this;
+        }
+
+        public Builder email(String e) {
+            email = e;
+            return this;
+        }
+
+        public Builder password(String pass) {
+            password = pass;
+            return this;
+        }
+
+        public User build() {
+            return new User(this);
+        }
+
+    }
+
+    public User(Builder builder) {
+        firstName = builder.firstName;
+        lastName = builder.lastName;
+        email = builder.email;
+        password = builder.password;
+        role = builder.role;
+        tokens = builder.tokens;
+        favoriteRecipes = builder.favoriteRecipes;
+        groceryList = builder.groceryList;
     }
 }
