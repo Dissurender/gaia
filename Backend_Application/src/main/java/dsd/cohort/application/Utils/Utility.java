@@ -3,9 +3,7 @@ package dsd.cohort.application.Utils;
 import java.security.Key;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -17,10 +15,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dsd.cohort.application.ingredient.Ingredient;
 import dsd.cohort.application.ingredient.IngredientRepository;
-import dsd.cohort.application.ingredient.IngredientServiceImpl;
-import dsd.cohort.application.recipe.Recipe;
+import dsd.cohort.application.ingredient.IngredientService;
 
 @Component
 public class Utility {
@@ -31,13 +27,13 @@ public class Utility {
 
     private IngredientRepository ingredientRepository;
 
-    private IngredientServiceImpl ingredientServiceImpl;
+    private IngredientService ingredientService;
 
     private long lastCallTime;
 
-    public Utility(IngredientRepository ingredientRepository, IngredientServiceImpl ingredientServiceImpl) {
+    public Utility(IngredientRepository ingredientRepository, IngredientService ingredientService) {
         this.ingredientRepository = ingredientRepository;
-        this.ingredientServiceImpl = ingredientServiceImpl;
+        this.ingredientService = ingredientService;
         this.lastCallTime = System.currentTimeMillis() / 1000;
     }
 
@@ -99,89 +95,89 @@ public class Utility {
         return str;
     }
 
-    public Recipe recipeHandler(JsonNode jsonNode, String recipeId) {
+//    public Recipe recipeHandler(JsonNode jsonNode, String recipeId) {
+//
+//        Recipe newRecipe = new Recipe();
+//
+//        JsonNode recipeNode = jsonNode.findValue("recipe");
+//
+//        newRecipe.setName(recipeNode.findValue("label").textValue());
+//        newRecipe.setDescription(recipeNode.findValue("label").textValue());
+//        newRecipe.setRecipeId(recipeId);
+//        newRecipe.setImageUrl(recipeNode.findValue("image").textValue());
+//        newRecipe.setUrl(recipeNode.findValue("url").textValue());
+//        newRecipe.setYield(recipeNode.findValue("yield").intValue());
+//        newRecipe.setTotalTime(recipeNode.findValue("totalTime").intValue());
+//
+//        // get nutrients from json
+//        JsonNode nutrients = recipeNode.findValue("totalNutrients");
+//
+//        Double caloriesD = recipeNode.findValue("calories").doubleValue();
+//        newRecipe.setCalories(Double.parseDouble(df.format(caloriesD)));
+//
+//        double fats = nutrients
+//                .findValue("FAT")
+//                .findValue("quantity")
+//                .doubleValue();
+//        newRecipe.setFat(Double.parseDouble(df.format(fats)));
+//
+//        double protein = nutrients
+//                .findValue("PROCNT")
+//                .findValue("quantity")
+//                .doubleValue();
+//        newRecipe.setProtein(Double.parseDouble(df.format(protein)));
+//
+//        double carbs = nutrients
+//                .findValue("CHOCDF")
+//                .findValue("quantity")
+//                .doubleValue();
+//        newRecipe.setCarbs(Double.parseDouble(df.format(carbs)));
+//
+//        // get ingredients from json
+//        JsonNode ingredientsJson = recipeNode.findValue("ingredients");
+//
+//        Set<Ingredient> ingredients = new HashSet<>();
+//
+//        for (JsonNode ingredient : ingredientsJson) {
+//            ingredients.add(parseIngredient(ingredient));
+//        }
+//
+//        newRecipe.setIngredients(ingredients);
+//
+//        System.out.println("\n\nSuccessful recipe parse\n\n");
+//
+//        return newRecipe;
+//    }
 
-        Recipe newRecipe = new Recipe();
-
-        JsonNode recipeNode = jsonNode.findValue("recipe");
-
-        newRecipe.setName(recipeNode.findValue("label").textValue());
-        newRecipe.setDescription(recipeNode.findValue("label").textValue());
-        newRecipe.setRecipeId(recipeId);
-        newRecipe.setImageUrl(recipeNode.findValue("image").textValue());
-        newRecipe.setUrl(recipeNode.findValue("url").textValue());
-        newRecipe.setYield(recipeNode.findValue("yield").intValue());
-        newRecipe.setTotalTime(recipeNode.findValue("totalTime").intValue());
-
-        // get nutrients from json
-        JsonNode nutrients = recipeNode.findValue("totalNutrients");
-
-        Double caloriesD = recipeNode.findValue("calories").doubleValue();
-        newRecipe.setCalories(Double.parseDouble(df.format(caloriesD)));
-
-        double fats = nutrients
-                .findValue("FAT")
-                .findValue("quantity")
-                .doubleValue();
-        newRecipe.setFat(Double.parseDouble(df.format(fats)));
-
-        double protein = nutrients
-                .findValue("PROCNT")
-                .findValue("quantity")
-                .doubleValue();
-        newRecipe.setProtein(Double.parseDouble(df.format(protein)));
-
-        double carbs = nutrients
-                .findValue("CHOCDF")
-                .findValue("quantity")
-                .doubleValue();
-        newRecipe.setCarbs(Double.parseDouble(df.format(carbs)));
-
-        // get ingredients from json
-        JsonNode ingredientsJson = recipeNode.findValue("ingredients");
-
-        Set<Ingredient> ingredients = new HashSet<>();
-
-        for (JsonNode ingredient : ingredientsJson) {
-            ingredients.add(parseIngredient(ingredient));
-        }
-
-        newRecipe.setIngredients(ingredients);
-
-        System.out.println("\n\nSuccessful recipe parse\n\n");
-
-        return newRecipe;
-    }
-
-    public Ingredient parseIngredient(JsonNode ingredient) {
-
-        String foodId = ingredient.findValue("foodId").textValue();
-        Ingredient existingIngredient = ingredientRepository.findByFoodId(foodId);
-
-        if (existingIngredient != null) {
-            return existingIngredient;
-        }
-
-        Ingredient newIngredient = new Ingredient();
-
-        newIngredient.setFoodId(ingredient.findValue("foodId").textValue());
-        newIngredient.setText(ingredient.findValue("text").textValue());
-        newIngredient.setQuantity(ingredient.findValue("quantity").intValue());
-        newIngredient.setMeasure(ingredient.findValue("measure").textValue());
-        newIngredient.setName(ingredient.findValue("food").textValue());
-        newIngredient.setFoodCategory(ingredient.findValue("foodCategory").textValue());
-        newIngredient.setImageUrl(ingredient.findValue("image").textValue());
-
-        Double weight = ingredient.findValue("weight").doubleValue();
-        newIngredient.setWeight(Double.parseDouble(df.format(weight)));
-
-        ingredientServiceImpl.createIngredient(newIngredient);
-
-        System.out.println("\n\nSuccessful ingredient parse\n\n");
-
-        return newIngredient;
-
-    }
+//    public Ingredient parseIngredient(JsonNode ingredient) {
+//
+//        String foodId = ingredient.findValue("foodId").textValue();
+//        Ingredient existingIngredient = ingredientRepository.findByFoodId(foodId);
+//
+//        if (existingIngredient != null) {
+//            return existingIngredient;
+//        }
+//
+//        Ingredient newIngredient = new Ingredient();
+//
+//        newIngredient.setFoodId(ingredient.findValue("foodId").textValue());
+//        newIngredient.setText(ingredient.findValue("text").textValue());
+//        newIngredient.setQuantity(ingredient.findValue("quantity").intValue());
+//        newIngredient.setMeasure(ingredient.findValue("measure").textValue());
+//        newIngredient.setName(ingredient.findValue("food").textValue());
+//        newIngredient.setFoodCategory(ingredient.findValue("foodCategory").textValue());
+//        newIngredient.setImageUrl(ingredient.findValue("image").textValue());
+//
+//        Double weight = ingredient.findValue("weight").doubleValue();
+//        newIngredient.setWeight(Double.parseDouble(df.format(weight)));
+//
+//        ingredientServiceImpl.createIngredient(newIngredient);
+//
+//        System.out.println("\n\nSuccessful ingredient parse\n\n");
+//
+//        return newIngredient;
+//
+//    }
 
     public JsonNode stringToJson(String response) throws JsonProcessingException, JsonMappingException {
         // declare variables for parsing

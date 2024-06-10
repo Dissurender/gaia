@@ -5,11 +5,14 @@ import dsd.cohort.application.config.JwtService;
 import dsd.cohort.application.token.Token;
 import dsd.cohort.application.token.TokenRepository;
 import dsd.cohort.application.token.TokenType;
+import dsd.cohort.application.user.Role;
 import dsd.cohort.application.user.User;
 import dsd.cohort.application.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,17 +26,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(RegisterRequestDTO request) {
+
+        if (!userRepository.findByEmail(request.getEmail()).isEmpty()) {
+            logger.error("User with email {} already exists.", request.getEmail());
+            return null;
+        }
+
         User user = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
+                .role(Role.USER)
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -41,6 +54,8 @@ public class AuthenticationService {
         String refreshToken = jwtService.generateRefreshToken(user);
 
         saveUserToken(savedUser, jwtToken);
+
+        logger.debug("New user {} created.", savedUser.getEmail());
 
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
@@ -62,6 +77,8 @@ public class AuthenticationService {
         String refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
+
+        logger.debug("User {} authenticated.", user.getEmail());
 
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)

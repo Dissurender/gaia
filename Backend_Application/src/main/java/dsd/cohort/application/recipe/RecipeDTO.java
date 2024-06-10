@@ -3,13 +3,11 @@ package dsd.cohort.application.recipe;
 import java.util.List;
 
 import dsd.cohort.application.ingredient.IngredientDTO;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecipeDTO {
@@ -21,10 +19,9 @@ public class RecipeDTO {
   private int totalTime;
   private String imageUrl;
   private String url;
-  private int protein;
-  private int fat;
-  private int carbs;
-  private int calories;
-  private List<IngredientDTO> ingredients;
+  private double protein;
+  private double fat;
+  private double carbs;
+  private double calories;
 
 }

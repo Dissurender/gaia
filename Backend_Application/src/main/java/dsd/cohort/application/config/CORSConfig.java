@@ -18,7 +18,8 @@ public class CORSConfig {
     @Bean
     public CorsFilter corsFilter() {
         var urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        var corsConfiguration = new CorsConfiguration();
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
 

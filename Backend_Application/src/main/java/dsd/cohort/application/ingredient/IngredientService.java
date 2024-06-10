@@ -1,17 +1,35 @@
 package dsd.cohort.application.ingredient;
 
-import java.util.List;
-
+import dsd.cohort.application.Utils.DTOtoEntityMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
-public interface IngredientService {
+@RequiredArgsConstructor
+public class IngredientService {
 
-    Ingredient getIngredientByFoodId(String foodId);
+    private final IngredientRepository ingredientRepository;
+    private final DTOtoEntityMapper mapper;
 
-    Ingredient ingredientExists(String foodId);
+    public Ingredient getIngredientByFoodId(String foodId) {
+        return ingredientRepository.findByFoodId(foodId);
+    }
 
-    Ingredient createIngredient(Ingredient ingredient);
+    public Ingredient createIngredient(IngredientDTO ingredientDTO) {
+        Ingredient ingredient = mapper.dtoToEntity(ingredientDTO);
 
-    List<Ingredient> getAllIngredients();
+        ingredientRepository.save(ingredient);
+        return ingredient;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return ingredientRepository.sample(5);
+    }
+
+    public List<Ingredient> getAllIngredients() {
+        return ingredientRepository.findAll();
+    }
 }

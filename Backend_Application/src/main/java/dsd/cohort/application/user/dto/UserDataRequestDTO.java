@@ -1,4 +1,4 @@
-package dsd.cohort.application.user;
+package dsd.cohort.application.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
