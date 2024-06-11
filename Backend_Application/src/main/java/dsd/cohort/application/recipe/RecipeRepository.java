@@ -8,11 +8,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RecipeRepository extends JpaRepository<RecipeEntity, Long> {
+public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
-    @Query(value = "SELECT r FROM RecipeEntity r WHERE r.name LIKE '%:name%'")
-    List<RecipeEntity> findByName(String name);
+    @Query(value = "SELECT r FROM Recipe r WHERE r.name LIKE '%:name%'")
+    List<Recipe> findByName(String name);
 
-    @Query(value = "SELECT r FROM RecipeEntity r WHERE r.recipeId=:recipeId")
-    RecipeEntity findByRecipeId(@Param("recipeId") String recipeId);
+    @Query(value = "SELECT r FROM Recipe r WHERE r.recipeId=:recipeId")
+    Recipe findByRecipeId(@Param("recipeId") String recipeId);
 }

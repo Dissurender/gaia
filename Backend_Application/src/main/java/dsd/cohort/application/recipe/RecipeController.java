@@ -34,7 +34,7 @@ public class RecipeController {
             content = @Content()),
     })
     @GetMapping("/")
-    public List<RecipeEntity> getAllRecipes() {
+    public List<Recipe> getAllRecipes() {
         return recipeService.getAllRecipes();
     }
 
@@ -48,8 +48,8 @@ public class RecipeController {
             content = @Content(mediaType = "teapot")),
     })
     @GetMapping("/{recipeId}")
-    public RecipeEntity getRecipeById(@PathVariable String recipeId) {
-        RecipeEntity recipe = recipeService.getRecipeByRecipeId(recipeId);
+    public Recipe getRecipeById(@PathVariable String recipeId) {
+        Recipe recipe = recipeService.getRecipeByRecipeId(recipeId);
         return recipe;
     }
 
@@ -61,8 +61,8 @@ public class RecipeController {
             content = @Content),
     })
     @GetMapping("/search/{name}")
-    public ResponseEntity<List<RecipeEntity>> getRecipeByName(@PathVariable String name) {
-        List<RecipeEntity> recipes = recipeService.getRecipeByName(name);
+    public ResponseEntity<List<Recipe>> getRecipeByName(@PathVariable String name) {
+        List<Recipe> recipes = recipeService.getRecipeByName(name);
 
         if (recipes.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

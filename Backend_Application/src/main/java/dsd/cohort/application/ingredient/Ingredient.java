@@ -2,20 +2,18 @@ package dsd.cohort.application.ingredient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import dsd.cohort.application.recipe.RecipeEntity;
+import dsd.cohort.application.recipe.Recipe;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ingredients")
-public class IngredientEntity {
+public class Ingredient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +28,8 @@ public class IngredientEntity {
     @Column(name = "name")
     private String name;
 
-    // represents the name of the ingredient
-    @Column(name = "text")
+    @Lob
+    @Column(name = "text", columnDefinition = "TEXT")
     private String text;
 
     @Column(name = "image_url", length = 2083)
@@ -52,7 +50,7 @@ public class IngredientEntity {
   
     @ManyToOne
     @JoinColumn(name = "recipe_id")
-    private RecipeEntity recipe;
+    private Recipe recipe;
 
     @Override
     public String toString() {
