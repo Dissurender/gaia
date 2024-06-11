@@ -5,6 +5,7 @@ import dsd.cohort.application.recipe.Recipe;
 import dsd.cohort.application.recipe.RecipeRepository;
 import dsd.cohort.application.user.dto.UserDataRequestDTO;
 import dsd.cohort.application.user.dto.UserRegisterDTO;
+import jakarta.persistence.EntityExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -41,14 +41,21 @@ public class UserServiceTest {
     @BeforeEach
     public void setUp() {
         userRegisterDTO = new UserRegisterDTO("John", "Doe", "john.doe@example.com", "password123");
+        User testUser = new User.Builder()
+                .firstName(userRegisterDTO.getFirstName())
+                .lastName(userRegisterDTO.getLastName())
+                .email(userRegisterDTO.getEmail())
+                .password(userRegisterDTO.getPassword())
+                .build();
     }
+
 
     @Test
     public void createUser_WithValidDetails_CreatesAndSavesUser() {
         // Arrange
         when(userRepository.findByEmail(userRegisterDTO.getEmail())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(userRegisterDTO.getPassword())).thenReturn("encodedPassword");
-        User expectedUser = User.builder()
+        User expectedUser = new User.Builder()
                 .firstName(userRegisterDTO.getFirstName())
                 .lastName(userRegisterDTO.getLastName())
                 .email(userRegisterDTO.getEmail())
@@ -70,7 +77,7 @@ public class UserServiceTest {
         when(userRepository.findByEmail(userRegisterDTO.getEmail())).thenReturn(Optional.of(new User()));
 
         // Act & Assert
-        assertThrows(NoSuchElementException.class, () -> userService.createUser(userRegisterDTO));
+        assertThrows(EntityExistsException.class, () -> userService.createUser(userRegisterDTO));
     }
 
     @Test
@@ -78,7 +85,7 @@ public class UserServiceTest {
         // Arrange
         when(userRepository.findByEmail(userRegisterDTO.getEmail())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(userRegisterDTO.getPassword())).thenReturn("encodedPassword");
-        User expectedUser = User.builder()
+        User expectedUser = new User.Builder()
                 .firstName(userRegisterDTO.getFirstName())
                 .lastName(userRegisterDTO.getLastName())
                 .email(userRegisterDTO.getEmail())
@@ -100,7 +107,7 @@ public class UserServiceTest {
     public void AddRecipe_AddsRecipeToFavorites() {
         // Arrange
         UserDataRequestDTO userDataRequestDTO = new UserDataRequestDTO("test@example.com", "recipeId");
-        User user = User.builder().email("test@example.com").favoriteRecipes(new HashSet<>()).build();
+        User user = new User.Builder().email("test@example.com").build();
         Recipe recipe = Recipe.builder().recipeId("recipeId").build();
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
@@ -117,7 +124,7 @@ public class UserServiceTest {
     public void AddRecipe_AddsIngredientsToGroceryList() {
         // Arrange
         UserDataRequestDTO userDataRequestDTO = new UserDataRequestDTO("test@example.com", "recipeId");
-        User user = User.builder().email("test@example.com").groceryList(new HashSet<>()).build();
+        User user = new User.Builder().email("test@example.com").build();
         Ingredient ingredient = Ingredient.builder().id(1L).build();
         Recipe recipe = Recipe.builder().recipeId("recipeId").ingredients(List.of(ingredient)).build();
 

@@ -44,6 +44,10 @@ public class RecipeService {
     public Recipe getRecipeByRecipeId(String recipeId) throws ResponseStatusException {
         Recipe recipe = recipeRepository.findByRecipeId(recipeId);
 
+        if (recipe == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe not found");
+        }
+
         System.out.println("\nRecipe found in database: " + recipe.getRecipeId());
 
         return recipe;
