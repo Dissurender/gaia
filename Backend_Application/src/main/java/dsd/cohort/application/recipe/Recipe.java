@@ -30,7 +30,8 @@ public class Recipe {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "yield")

@@ -1,6 +1,5 @@
 package dsd.cohort.application.Utils;
 
-
 import dsd.cohort.application.ingredient.Ingredient;
 import dsd.cohort.application.ingredient.IngredientDTO;
 import dsd.cohort.application.user.User;
@@ -32,7 +31,7 @@ public class DTOtoEntityMapper {
     }
 
     public User dtoToEntity(UserRegisterDTO userRegisterDTO) {
-        return User.builder()
+        return new User.Builder()
                 .firstName(userRegisterDTO.getFirstName())
                 .lastName(userRegisterDTO.getLastName())
                 .email(userRegisterDTO.getEmail())

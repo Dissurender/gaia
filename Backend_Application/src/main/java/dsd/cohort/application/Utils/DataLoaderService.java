@@ -8,6 +8,7 @@ import dsd.cohort.application.ingredient.IngredientService;
 import dsd.cohort.application.recipe.Recipe;
 import dsd.cohort.application.recipe.RecipeDTO;
 import dsd.cohort.application.recipe.RecipeService;
+import dsd.cohort.application.user.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
@@ -35,43 +36,72 @@ public class DataLoaderService {
 
     private final AuthenticationService authenticationService;
     private final RecipeService recipeService;
-    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
     private final IngredientService ingredientService;
+
+    private final PasswordEncoder passwordEncoder;
     private final DecimalFormat df = new DecimalFormat("#.00");
 
+    /**
+     * Initializes csv parsing by scanning a specified directory for CSV files,
+     * ensuring that ingredient data is processed before other data types. Logs the progress
+     * and handles any IO exceptions that may occur.
+     *
+     * @throws IOException if an IO error occurs during file processing
+     */
     @PostConstruct
-    public void loadData() {
-        String directory = "src/main/resources/csv";
+    public void loadData() throws IOException {
+        logger.info("Starting data loader service...");
+        logger.info("DataLoader service started.");
 
-        try (Stream<Path> files = Files.walk(Paths.get(directory))
-                .filter(Files::isRegularFile)
-        ) {
-            List<Path> filePaths = files.toList();
+        String directory = "Backend_Application/src/main/resources/csv";
+        Path path = Paths.get(directory);
 
-            // Ensure that ingredients are parsed before recipes
+        if (!Files.exists(path)) {
+            logger.info("DataLoader service directory does not exist.");
+            logger.info("Absolute path: {}", path.toAbsolutePath());
+            return;
+        }
+
+        try (Stream<Path> stream = Files.walk(path)) {
+            List<Path> filePaths = stream
+                    .filter(Files::isRegularFile)
+                    .toList();
+            logger.info("Found {} files in {}", filePaths.size(), directory);
+
             filePaths.stream()
-                    .filter(path -> path.getFileName().toString().equalsIgnoreCase("MOCK_DATA_INGREDIENT.csv"))
+                    .filter(filePath -> filePath.getFileName().toString().equalsIgnoreCase("MOCK_DATA_INGREDIENT.csv"))
                     .forEach(this::fileProcessor);
+            logger.info("Finished loading ingredient data.");
 
             filePaths.stream()
-                    .filter(path -> !path.getFileName().toString().equalsIgnoreCase("MOCK_DATA_INGREDIENT.csv"))
+                    .filter(filePath -> !filePath.getFileName().toString().equalsIgnoreCase("MOCK_DATA_INGREDIENT.csv"))
                     .forEach(this::fileProcessor);
+            logger.info("Finished loading other data.");
 
-            System.out.println(filePaths.size() + " files parsed.");
+            logger.info("{} files parsed.", filePaths.size());
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error("Error while reading csv files.", e);
         }
     }
 
     private void fileProcessor(Path filePath) {
 
         try (FileReader reader = new FileReader(filePath.toFile());
-             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT)
+             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())
         ) {
             String fileName = filePath.getFileName().toString();
 
             switch (fileName) {
                 case "MOCK_DATA_USER.csv":
+
+                    if (userService.countUsers()) {
+                        logger.info("Found {} users.", userService.countUsers());
+                        logger.info("Skipping user registrations.");
+                        return;
+                    }
+
+                    logger.info("Loading MOCK_DATA_USER.csv...");
                     for (CSVRecord csvRecord : csvParser) {
                         authenticationService.register(
                                 RegisterRequestDTO.builder()
@@ -84,10 +114,23 @@ public class DataLoaderService {
                     }
                     break;
 
-                case "MOCK_DATA_RECIPE.csv":
+                case "MOCK_DATA_RECIPES.csv":
+
+                    if (!recipeService.getAllRecipes().isEmpty()) {
+                        logger.info("Found {} recipes.", recipeService.getAllRecipes().size());
+                        logger.info("Skipping recipe creations.");
+                        return;
+                    }
+
+                    logger.info("Loading MOCK_DATA_RECIPES.csv...");
                     for (CSVRecord csvRecord : csvParser) {
+
+                        if (recipeService.recipeExists(csvRecord.get("recipe_id"))) {
+                            logger.info("Found recipe with id {}, skipping.", csvRecord.get("recipe_id"));
+                            continue;
+                        }
+
                         Recipe recipe = recipeService.createRecipe(
-                                // recipe_id,name,description,yield,total_time,image_url,url,protein,fat,carbs,calories
                                 RecipeDTO.builder()
                                         .recipeId(csvRecord.get("recipe_id"))
                                         .name(csvRecord.get("name"))
@@ -96,10 +139,10 @@ public class DataLoaderService {
                                         .totalTime(Integer.parseInt(csvRecord.get("total_time")))
                                         .imageUrl(csvRecord.get("image_url"))
                                         .url(csvRecord.get("url"))
-                                        .protein(Double.parseDouble(df.format(csvRecord.get("protein"))))
-                                        .fat(Double.parseDouble(df.format(csvRecord.get("fat"))))
-                                        .carbs(Double.parseDouble(df.format(csvRecord.get("carbs"))))
-                                        .calories(Double.parseDouble(df.format(csvRecord.get("calories"))))
+                                        .protein(Double.parseDouble(csvRecord.get("protein")))
+                                        .fat(Double.parseDouble(csvRecord.get("fat")))
+                                        .carbs(Double.parseDouble(csvRecord.get("carbs")))
+                                        .calories(Double.parseDouble(csvRecord.get("calories")))
                                         .build()
                         );
 
@@ -109,9 +152,22 @@ public class DataLoaderService {
                     }
                     break;
 
-                case "MOCK_DATA_INGREDIENT.csv":
+                case "MOCK_DATA_INGREDIENTS.csv":
+
+                    if (!ingredientService.getAllIngredients().isEmpty()) {
+                        logger.info("Found {} ingredients.", ingredientService.getAllIngredients().size());
+                        logger.info("Skipping ingredients creations.");
+                        return;
+                    }
+
+                    logger.info("Loading MOCK_DATA_INGREDIENT.csv...");
                     for (CSVRecord csvRecord : csvParser) {
-                        // food_id	name	text	image_url	quantity	measure	weight	food_category
+
+                        if (ingredientService.getIngredientByFoodId(csvRecord.get("food_id")) != null) {
+                            logger.info("Found ingredient with id {}, skipping.", csvRecord.get("food_id"));
+                            continue;
+                        }
+
                         Ingredient ingredient = ingredientService.createIngredient(
                                 IngredientDTO.builder()
                                         .foodId(csvRecord.get("food_id"))
@@ -120,7 +176,7 @@ public class DataLoaderService {
                                         .imageUrl(csvRecord.get("image_url"))
                                         .quantity(Integer.parseInt(csvRecord.get("quantity")))
                                         .measure(csvRecord.get("measure"))
-                                        .weight(Double.parseDouble(df.format(csvRecord.get("wieght"))))
+                                        .weight(Double.parseDouble(csvRecord.get("weight")))
                                         .foodCategory(csvRecord.get("food_category"))
                                         .build()
                         );
@@ -132,9 +188,9 @@ public class DataLoaderService {
                     break;
 
                 default:
+                    logger.info("Ignoring unknown file: {}", fileName);
                     throw new IOException("Unsupported file format or unrecognized file");
             }
-
 
         } catch (IOException e) {
             logger.error(e.getMessage());

@@ -7,6 +7,7 @@ import dsd.cohort.application.recipe.RecipeRepository;
 import dsd.cohort.application.user.dto.UserDataRequestDTO;
 import dsd.cohort.application.user.dto.UserRegisterDTO;
 import dsd.cohort.application.user.dto.UserRequestDTO;
+import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,13 +26,20 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     // TODO: decay func
+    @Deprecated
     public boolean userExists(String email) {
         return usersRepository.findByEmail(email).isPresent();
     }
 
+    public boolean countUsers() {
+        return usersRepository.count() > 0;
+    }
+
     public User createUser(UserRegisterDTO user) {
 
-        usersRepository.findByEmail(user.getEmail()).orElseThrow();
+        if (usersRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new EntityExistsException();
+        }
 
         User newUser = new User.Builder()
                 .firstName(user.getFirstName())

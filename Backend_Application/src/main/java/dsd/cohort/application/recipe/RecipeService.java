@@ -1,39 +1,37 @@
 package dsd.cohort.application.recipe;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import dsd.cohort.application.ingredient.Ingredient;
 import dsd.cohort.application.ingredient.IngredientRepository;
 import dsd.cohort.application.ingredient.IngredientService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-
-import dsd.cohort.application.Utils.Utility;
-import dsd.cohort.application.ingredient.Ingredient;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class RecipeService {
 
     private final RecipeRepository recipeRepository;
-    private final Utility utility;
     private final IngredientService ingredientService;
+    private final IngredientRepository ingredientRepository;
 
+    /**
+     * Retrieves all recipes from the database.
+     *
+     * @return a list of RecipeEntity objects representing all recipes in the database
+     */
     // TODO: add pagination
-    // return all recipes from database
     public List<Recipe> getAllRecipes() {
-        System.out.println("Fetching all recipes...");
-        System.out.println("Number of recipes: " + recipeRepository.count());
         return recipeRepository.findAll();
+    }
+
+    public boolean recipeExists(String id) {
+        return recipeRepository.findByRecipeId(id) != null;
     }
 
     /**
@@ -88,6 +86,7 @@ public class RecipeService {
         return recipeNames;
     }
 
+    @Transactional
     public Recipe createRecipe(RecipeDTO recipeDTO) {
 
         Recipe recipe = Recipe.builder()
@@ -102,8 +101,14 @@ public class RecipeService {
                 .imageUrl(recipeDTO.getImageUrl())
                 .yield(recipeDTO.getYield())
                 .totalTime(recipeDTO.getTotalTime())
-                .ingredients(ingredientService.getIngredients())
                 .build();
+
+        // make sure that ingredients merge
+        List<Ingredient> ingredientList = ingredientService.getIngredients();
+        for (int i = 0; i < ingredientList.size(); i++) {
+            ingredientList.set(i, ingredientRepository.saveAndFlush(ingredientList.get(i)));
+        }
+        recipe.setIngredients(ingredientList);
 
         recipeRepository.save(recipe);
         return recipe;

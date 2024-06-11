@@ -28,8 +28,8 @@ public class Ingredient {
     @Column(name = "name")
     private String name;
 
-    // represents the name of the ingredient
-    @Column(name = "text")
+    @Lob
+    @Column(name = "text", columnDefinition = "TEXT")
     private String text;
 
     @Column(name = "image_url", length = 2083)
