@@ -1,14 +1,16 @@
 package dsd.cohort.application.config;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -21,6 +23,16 @@ public class JwtService {
     private Long jwtExpiration;
     @Value("${spring.security.jwt.refresh-token.expiration}")
     private Long refreshExpiration;
+
+    private JwtParser jwtParser;
+    private JwtBuilder jwtBuilder;
+
+    @PostConstruct
+    private void init() {
+        SecretKey secretKey = getVerifyKey();
+        this.jwtParser = Jwts.parser().verifyWith(secretKey).build();
+        this.jwtBuilder = Jwts.builder();
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -47,8 +59,7 @@ public class JwtService {
             UserDetails userDetails,
             Long expiration
     ) {
-        return Jwts
-                .builder()
+        return jwtBuilder
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
@@ -70,15 +81,19 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return (Claims) Jwts
-                .parser()
-                .verifyWith(getVerifyKey())
-                .build()
-                .parseSignedClaims(token);
+        return (Claims) jwtParser.parseSignedClaims(token);
     }
 
     private SecretKey getVerifyKey() {
-        byte[] decodedKey = Base64.getDecoder().decode(secret);
-        return new SecretKeySpec(decodedKey, 0, decodedKey.length, "HS256");
+
+        if (secret == null) {
+            throw new IllegalStateException("Missing required property secret");
+        }
+
+        try {
+            return new SecretKeySpec(secret.getBytes(), 0, secret.length(), "AES");
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("Failed to create keySpec", e);
+        }
     }
 }
