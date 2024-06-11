@@ -17,7 +17,7 @@
 
 <br />
 <div align="center">
-  <a href="https://github.com/bethanyann/dsd-cohort-2024">
+  <a href="https://github.com/Dissurender/gaia">
     <img src="./Frontend_Application/src/assets/gaia_logo_white.png" alt="Logo" width="150" height="150">
   </a>
 
@@ -28,7 +28,7 @@
     <br />
     <a href="https://gotanotheringredientapp.xyz">View Demo</a>
     ·
-    <a href="https://github.com/bethanyann/dsd-cohort-2024/issues">Report Bug</a>
+    <a href="https://github.com/Dissurender/gaia/issues">Report Bug</a>
   </p>
 </div>
 
@@ -114,7 +114,7 @@ From Vscode:
 - [ ] Run `npm install` in the /Frontend_Application sub-directory with the integrated vscode terminal
 - [ ] Run `npm run start` in the /Frontend_Application sub-directory with the integrated vscode terminal
 
-_Please refer to the [SETUPDOC](https://github.com/bethanyann/dsd-cohort-2024/blob/main/SETUPDOC.md) for more information_
+_Please refer to the [SETUPDOC](https://github.com/Dissurender/gaia/blob/main/SETUPDOC.md) for more information_
 
 ## Usage
 
@@ -130,7 +130,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 4. Review and revision
 5. Presentation
 
-See the [open issues](https://github.com/bethanyann/dsd-cohort-2024/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/Dissurender/gaia/issues) for a full list of proposed features (and known issues).
 
 ## License
 
@@ -149,17 +149,17 @@ Distributed under the [MIT License][license-url]. See `LICENSE.txt` for more inf
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://github.com/alexandresanlim/Badges4-README.md-Profile#-frameworks--library- -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-<!-- https://github.com/bethanyann/dsd-cohort-2024 -->
-[contributors-shield]: https://img.shields.io/github/contributors/bethanyann/dsd-cohort-2024.svg?style=for-the-badge
-[contributors-url]: https://github.com/bethanyann/dsd-cohort-2024/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/bethanyann/dsd-cohort-2024.svg?style=for-the-badge
-[forks-url]: https://github.com/bethanyann/dsd-cohort-2024/network/members
-[stars-shield]: https://img.shields.io/github/stars/bethanyann/dsd-cohort-2024.svg?style=for-the-badge
-[stars-url]: https://github.com/bethanyann/dsd-cohort-2024/stargazers
-[issues-shield]: https://img.shields.io/github/issues/bethanyann/dsd-cohort-2024.svg?style=for-the-badge
-[issues-url]: https://github.com/bethanyann/dsd-cohort-2024/issues
-[license-shield]: https://img.shields.io/github/license/bethanyann/dsd-cohort-2024.svg?style=for-the-badge
-[license-url]: https://github.com/bethanyann/dsd-cohort-2024/blob/master/LICENSE.txt
+<!-- https://github.com/Dissurender/gaia -->
+[contributors-shield]: https://img.shields.io/github/contributors/Dissurender/gaia.svg?style=for-the-badge
+[contributors-url]: https://github.com/Dissurender/gaia/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Dissurender/gaia.svg?style=for-the-badge
+[forks-url]: https://github.com/Dissurender/gaia/network/members
+[stars-shield]: https://img.shields.io/github/stars/Dissurender/gaia.svg?style=for-the-badge
+[stars-url]: https://github.com/Dissurender/gaia/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Dissurender/gaia.svg?style=for-the-badge
+[issues-url]: https://github.com/Dissurender/gaia/issues
+[license-shield]: https://img.shields.io/github/license/Dissurender/gaia.svg?style=for-the-badge
+[license-url]: https://github.com/Dissurender/gaia/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [Material-UI]: https://img.shields.io/badge/Material-UI-000000?style=for-the-badge&logo=material-ui&logoColor=white

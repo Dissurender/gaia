@@ -2,6 +2,9 @@ package dsd.cohort.application.recipe;
 
 import java.util.List;
 
+import dsd.cohort.application.recipe.dto.RecipeDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +23,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RequestMapping("/recipes")
 public class RecipeController {
 
+    private static final Logger logger = LoggerFactory.getLogger(RecipeController.class);
+
     private RecipeService recipeService;
 
     public RecipeController(RecipeService recipeService) {
@@ -30,7 +35,7 @@ public class RecipeController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "All recipes returned",
             content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = RecipeDTO.class)))),
-        @ApiResponse(responseCode = "500", description = "Could not get recipes",
+        @ApiResponse(responseCode = "404", description = "Could not find recipes",
             content = @Content()),
     })
     @GetMapping("/")
@@ -65,6 +70,7 @@ public class RecipeController {
         List<Recipe> recipes = recipeService.getRecipeByName(name);
 
         if (recipes.isEmpty()) {
+            logger.error("\nNo recipes found with name: " + name);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
@@ -83,6 +89,7 @@ public class RecipeController {
         List<String> recipeNames = recipeService.getRecipeNames();
         
         if (recipeNames.isEmpty()) {
+            logger.error("\nNo recipe names found in database");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 

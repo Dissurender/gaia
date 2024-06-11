@@ -1,18 +1,17 @@
-import React from "react";
-import "./App.css";
-import { Route, Routes } from "react-router-dom";
-import Home from "./routes/home/home.component";
-import Login from "./routes/login/login.component";
-import Register from "./routes/register/register.component";
-import Dashboard from "./routes/dashboard/dashboard.component";
-import MyRecipes from "./routes/myrecipes/myrecipes.component";
-import MyGroceryList from "./routes/mygrocerylist/mygrocerylist.component";
-import Settings from "./routes/settings/settings.component";
-import { AuthProvider } from "./auth-context/AuthContext.jsx"; // Import AuthProvider
-import { useState } from "react";
+
+import { Routes, Route } from 'react-router-dom'
+import Layout from './layouts'
+
+import Home from './pages/home'
+import { Login, Register } from './pages/auth'
+import Dashboard from './pages/dashboard'
+import MyRecipes from './pages/favorites'
+import MyGroceryList from './pages/grocerylist'
+import Settings from './pages/settings'
+
+import './App.css'
 
 function App() {
-  const [userInfo, setUserInfo] = useState({});
 
   return (
     <AuthProvider>
@@ -27,8 +26,8 @@ function App() {
         <Route path="/mygrocerylist" element={<MyGroceryList userInfo={userInfo} />} />
         <Route path="/settings" element={<Settings userInfo={userInfo} />} />
       </Routes>
-    </AuthProvider>
-  );
+    </>
+  )
 }
 
-export default App;
+export default App

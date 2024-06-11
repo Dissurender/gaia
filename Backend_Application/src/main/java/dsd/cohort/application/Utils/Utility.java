@@ -1,12 +1,8 @@
 package dsd.cohort.application.Utils;
 
-import java.security.Key;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.stereotype.Component;
 
@@ -22,8 +18,6 @@ import dsd.cohort.application.ingredient.IngredientService;
 public class Utility {
 
     private DecimalFormat df = new DecimalFormat("#.00");
-
-    private String secret = "icantbelieveitsnotsecret";
 
     private IngredientRepository ingredientRepository;
 

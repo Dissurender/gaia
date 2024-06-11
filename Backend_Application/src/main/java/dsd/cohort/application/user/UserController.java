@@ -68,7 +68,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Recipe not added to favorites",
                     content = @Content(mediaType = "application/json")),
     })
-    @PostMapping("/addrecipetofavorites")
+    @PostMapping("/addrecipetofavorites") // PUT /users/{email}/addrecipe or PUT /users/{email} w/ body
     public ResponseEntity<String> addRecipe(@RequestBody UserDataRequestDTO userDataRequestDTO) {
         try {
             userService.addRecipe(userDataRequestDTO);
@@ -126,7 +126,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Could not add ingredient to user's grocery list.",
                     content = @Content(mediaType = "application/json")),
     })
-    @PostMapping("/additemtogrocerylist")
+    @PostMapping("/additemtogrocerylist") // PUT
     public ResponseEntity<String> addItemToGroceryList(@RequestBody UserDataRequestDTO userDataRequestDTO) {
 
         try {
