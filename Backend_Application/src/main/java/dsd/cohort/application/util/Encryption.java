@@ -1,4 +1,4 @@
-package dsd.cohort.application.Utils;
+package dsd.cohort.application.util;
 
 import java.security.Key;
 

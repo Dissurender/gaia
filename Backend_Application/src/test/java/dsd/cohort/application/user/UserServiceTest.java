@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -125,7 +126,7 @@ public class UserServiceTest {
         // Arrange
         UserDataRequestDTO userDataRequestDTO = new UserDataRequestDTO("test@example.com", "recipeId");
         User user = new User.Builder().email("test@example.com").build();
-        Ingredient ingredient = Ingredient.builder().id(1L).build();
+        Ingredient ingredient = Ingredient.builder().id(new UUID(1L, 3L)).build();
         Recipe recipe = Recipe.builder().recipeId("recipeId").ingredients(List.of(ingredient)).build();
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));

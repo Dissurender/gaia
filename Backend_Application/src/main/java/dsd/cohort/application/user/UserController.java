@@ -1,9 +1,9 @@
 package dsd.cohort.application.user;
 
-import dsd.cohort.application.ingredient.IngredientDTO;
 import dsd.cohort.application.ingredient.Ingredient;
-import dsd.cohort.application.recipe.RecipeDTO;
+import dsd.cohort.application.ingredient.IngredientDTO;
 import dsd.cohort.application.recipe.Recipe;
+import dsd.cohort.application.recipe.RecipeDTO;
 import dsd.cohort.application.user.dto.UserDataRequestDTO;
 import dsd.cohort.application.user.dto.UserRegisterDTO;
 import dsd.cohort.application.user.dto.UserRequestDTO;
@@ -32,7 +32,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/test")
+    @GetMapping
     public List<User> test() {
         return userService.getAll();
     }
@@ -44,7 +44,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Could not create user",
                     content = @Content(mediaType = "application/json")),
     })
-    @PostMapping("/createuser")
+    @PostMapping
     public ResponseEntity<User> createUser(@RequestBody UserRegisterDTO user) {
 
         try {
@@ -68,8 +68,9 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Recipe not added to favorites",
                     content = @Content(mediaType = "application/json")),
     })
-    @PostMapping("/addrecipetofavorites") // PUT /users/{email}/addrecipe or PUT /users/{email} w/ body
-    public ResponseEntity<String> addRecipe(@RequestBody UserDataRequestDTO userDataRequestDTO) {
+    @PutMapping("/{email}") // PUT /users/{email}/addrecipe or PUT /users/{email} w/ body
+    public ResponseEntity<String> addRecipe(@RequestBody UserDataRequestDTO userDataRequestDTO,
+                                            @RequestParam String email) {
         try {
             userService.addRecipe(userDataRequestDTO);
 
@@ -88,8 +89,9 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Recipe not deleted from favorites",
                     content = @Content(mediaType = "application/json")),
     })
-    @DeleteMapping("/removerecipefromfavorites")
-    public ResponseEntity<String> deleteRecipe(@RequestBody UserDataRequestDTO userDataRequestDTO) {
+    @DeleteMapping("/{email}")
+    public ResponseEntity<String> deleteRecipe(@RequestBody UserDataRequestDTO userDataRequestDTO,
+                                               @RequestParam String email) {
         try {
             userService.deleteRecipe(userDataRequestDTO.getEmail(), userDataRequestDTO.getId());
 
@@ -98,7 +100,6 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Could not remove from user's favorites: " + e.getMessage());
         }
-
     }
 
     @Operation(summary = "Get a user's favorites")
@@ -108,7 +109,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Could not get user's favorites",
                     content = @Content(mediaType = "application/json")),
     })
-    @GetMapping("/getuserfavorites/{email}")
+    @GetMapping("/{email}")
     public ResponseEntity<Set<Recipe>> getUserFavorites(@PathVariable String email) {
         try {
             Set<Recipe> userFavorites = userService.getUserFavorites(email);
@@ -126,8 +127,9 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Could not add ingredient to user's grocery list.",
                     content = @Content(mediaType = "application/json")),
     })
-    @PostMapping("/additemtogrocerylist") // PUT
-    public ResponseEntity<String> addItemToGroceryList(@RequestBody UserDataRequestDTO userDataRequestDTO) {
+    @PutMapping("/{email}")
+    public ResponseEntity<String> addItemToGroceryList(@RequestBody UserDataRequestDTO userDataRequestDTO,
+                                                       @PathVariable String email) {
 
         try {
             userService.addGroceryItem(userDataRequestDTO);

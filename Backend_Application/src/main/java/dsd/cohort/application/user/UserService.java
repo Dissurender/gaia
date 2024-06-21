@@ -25,7 +25,6 @@ public class UserService {
     private final IngredientRepository ingredientRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // TODO: decay func
     @Deprecated
     public boolean userExists(String email) {
         return usersRepository.findByEmail(email).isPresent();
@@ -100,6 +99,7 @@ public class UserService {
     }
 
 
+    // TODO: mutate to handle new endpoint behavior
     public boolean addGroceryItem(UserDataRequestDTO userDataRequestDTO) {
 
         User user = usersRepository.findByEmail(userDataRequestDTO.getEmail()).orElseThrow();

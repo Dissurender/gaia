@@ -1,4 +1,4 @@
-package dsd.cohort.application.Utils;
+package dsd.cohort.application.util;
 
 import dsd.cohort.application.ingredient.Ingredient;
 import dsd.cohort.application.ingredient.IngredientDTO;
@@ -33,7 +33,6 @@ public class DTOtoEntityMapperTest {
                 .weight(150.456)
                 .imageUrl("http://example.com/tomato.jpg")
                 .quantity(2)
-                .foodCategory("Vegetable")
                 .build();
 
         // Act
@@ -47,7 +46,6 @@ public class DTOtoEntityMapperTest {
         assertEquals(150.46, ingredient.getWeight());
         assertEquals("http://example.com/tomato.jpg", ingredient.getImageUrl());
         assertEquals(2, ingredient.getQuantity());
-        assertEquals("Vegetable", ingredient.getFoodCategory());
     }
 
     @Test

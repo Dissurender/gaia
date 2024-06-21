@@ -1,4 +1,4 @@
-package dsd.cohort.application.Utils;
+package dsd.cohort.application.util;
 
 import dsd.cohort.application.ingredient.Ingredient;
 import dsd.cohort.application.ingredient.IngredientDTO;
@@ -26,7 +26,6 @@ public class DTOtoEntityMapper {
                 .weight(Double.parseDouble(df.format(ingredientDTO.getWeight())))
                 .imageUrl(ingredientDTO.getImageUrl())
                 .quantity(ingredientDTO.getQuantity())
-                .foodCategory(ingredientDTO.getFoodCategory())
                 .build();
     }
 

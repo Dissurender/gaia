@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
+public interface IngredientRepository extends JpaRepository<Ingredient, UUID> {
     Ingredient findByFoodId(String foodId);
 
     @Query(value = "SELECT * FROM ingredients ORDER BY RANDOM() LIMIT 5", nativeQuery = true)

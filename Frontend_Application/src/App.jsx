@@ -14,9 +14,7 @@ import './App.css'
 function App() {
 
   return (
-    <AuthProvider>
-      {" "}
-      {/* Wrap routes with AuthProvider */}
+    <>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login setUserInfo={setUserInfo} />} />

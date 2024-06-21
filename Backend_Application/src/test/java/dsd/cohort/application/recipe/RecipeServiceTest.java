@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -32,7 +33,7 @@ public class RecipeServiceTest {
 
     private Recipe testRecipe() {
         return Recipe.builder()
-                .id(1L)
+                .id(new UUID(1L, 2L))
                 .recipeId("test-recipe-id")
                 .name("Test Recipe")
                 .description("Test Description")
@@ -49,7 +50,7 @@ public class RecipeServiceTest {
 
     private RecipeDTO testRecipeDTO() {
         return RecipeDTO.builder()
-                .recipeId("1")
+                .recipeId("test-recipe-id")
                 .name("Sample Recipe")
                 .description("Sample Description")
                 .calories(100)

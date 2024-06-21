@@ -23,5 +23,6 @@ public class RecipeDTO {
   private double fat;
   private double carbs;
   private double calories;
+  private String foodCategory;
 
 }

@@ -1,10 +1,9 @@
 package dsd.cohort.application.ingredient;
 
-import dsd.cohort.application.Utils.DTOtoEntityMapper;
+import dsd.cohort.application.util.DTOtoEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

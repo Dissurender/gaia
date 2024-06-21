@@ -1,4 +1,4 @@
-package dsd.cohort.application.Utils;
+package dsd.cohort.application.util;
 
 import dsd.cohort.application.auth.AuthenticationService;
 import dsd.cohort.application.auth.RegisterRequestDTO;
@@ -143,6 +143,7 @@ public class DataLoaderService {
                                         .fat(Double.parseDouble(csvRecord.get("fat")))
                                         .carbs(Double.parseDouble(csvRecord.get("carbs")))
                                         .calories(Double.parseDouble(csvRecord.get("calories")))
+                                        .foodCategory(csvRecord.get("food_category"))
                                         .build()
                         );
 
@@ -177,7 +178,6 @@ public class DataLoaderService {
                                         .quantity(Integer.parseInt(csvRecord.get("quantity")))
                                         .measure(csvRecord.get("measure"))
                                         .weight(Double.parseDouble(csvRecord.get("weight")))
-                                        .foodCategory(csvRecord.get("food_category"))
                                         .build()
                         );
 
