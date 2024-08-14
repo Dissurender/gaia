@@ -1,37 +1,33 @@
 package dsd.cohort.application.config;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
 
-    @Value("${spring.security.jwt.secret-key}")
-    private String secret;
-    @Value("${spring.security.jwt.expiration}")
-    private Long jwtExpiration;
-    @Value("${spring.security.jwt.refresh-token.expiration}")
-    private Long refreshExpiration;
+    @Value("${application.security.jwt.expiration}")
+    private long jwtExpiration;
+    @Value("${application.security.jwt.refresh-expiration}")
+    private long refreshExpiration;
+    private final Key signingKey;
 
-    private JwtParser jwtParser;
-    private JwtBuilder jwtBuilder;
-
-    @PostConstruct
-    private void init() {
-        SecretKey secretKey = getVerifyKey();
-        this.jwtParser = Jwts.parser().verifyWith(secretKey).build();
-        this.jwtBuilder = Jwts.builder();
+    public JwtService(@Value("${application.security.jwt.secret-key}") String secretKeyString) {
+        byte[] keyBytes = Base64.getDecoder().decode(secretKeyString);
+        this.signingKey = new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 
     public String extractUsername(String token) {
@@ -43,27 +39,25 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(
-            UserDetails userDetails
-    ) {
-        return buildToken(userDetails, jwtExpiration);
+    public String generateToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String generateRefreshToken(
-            UserDetails userDetails
-    ) {
-        return buildToken(userDetails, refreshExpiration);
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
-    private String buildToken(
-            UserDetails userDetails,
-            Long expiration
-    ) {
-        return jwtBuilder
+    public String generateRefreshToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+    }
+
+    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+        return Jwts.builder()
+                .claims(extraClaims)
                 .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getVerifyKey())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .signWith(signingKey)
                 .compact();
     }
 
@@ -72,7 +66,7 @@ public class JwtService {
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -81,19 +75,10 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return (Claims) jwtParser.parseSignedClaims(token);
-    }
-
-    private SecretKey getVerifyKey() {
-
-        if (secret == null) {
-            throw new IllegalStateException("Missing required property secret");
-        }
-
-        try {
-            return new SecretKeySpec(secret.getBytes(), 0, secret.length(), "AES");
-        } catch (IllegalArgumentException e) {
-            throw new IllegalStateException("Failed to create keySpec", e);
-        }
+        Jws<Claims> jws = Jwts.parser()
+                .verifyWith((SecretKey) signingKey)
+                .build()
+                .parseSignedClaims(token);
+        return jws.getPayload();
     }
 }

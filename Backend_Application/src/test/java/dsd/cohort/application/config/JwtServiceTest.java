@@ -29,7 +29,7 @@ public class JwtServiceTest {
 
         @Bean
         public JwtService jwtService() {
-            return new JwtService();
+            return new JwtService("TotallyTestSecret");
         }
     }
 
